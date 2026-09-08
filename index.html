@@ -123,6 +123,44 @@
   .steps ol{margin:0;padding-left:20px}
   .steps li{margin:6px 0;font-size:14px}
 
+  /* ===== 今日拓展 ===== */
+  .extra-sec{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+  .sec-head{font-size:15px;font-weight:700;color:var(--board);margin:0 0 6px;letter-spacing:.04em}
+  .sec-desc{color:var(--sub);font-size:12.5px;margin:0 0 8px}
+  .dlg-line{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-top:1px dashed var(--line);font-size:14.5px}
+  .dlg-line:first-of-type{border-top:none}
+  .dlg-who{font-size:11.5px;font-weight:700;color:var(--board);flex:none;width:46px;padding-top:2px}
+  .dlg-body{flex:1;min-width:0}
+  .dlg-en{font-family:'Noto Serif SC','Songti SC','SimSun',serif;font-weight:600}
+  .dlg-cn{color:var(--sub);font-size:12.5px}
+  .pron-item{padding:12px 0;border-top:1px dashed var(--line)}
+  .pron-item:first-of-type{border-top:none}
+  .pron-en{font-family:'Noto Serif SC','Songti SC','SimSun',serif;font-weight:600;font-size:15px}
+  .pron-ipa{color:var(--sub);font-size:13px;margin-left:6px}
+  .pron-huayin{font-size:13px;margin:4px 0 6px}
+  .pron-tips{font-size:12.5px;color:var(--sub);line-height:1.6}
+  .pron-tips b{color:var(--ink)}
+  .kids-rule{background:rgba(44,75,59,0.06);border:1px solid rgba(44,75,59,0.18);border-radius:12px;padding:12px 14px;font-size:14px;margin-bottom:12px}
+  .kids-ex{font-size:13.5px;padding:8px 0;border-top:1px dashed var(--line)}
+  .kids-ex:first-of-type{border-top:none}
+  .flip-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px}
+  .flip{perspective:800px;height:138px;cursor:pointer}
+  .flip-in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .35s ease}
+  .flip.flipped .flip-in{transform:rotateY(180deg)}
+  .flip-face{position:absolute;inset:0;backface-visibility:hidden;border:1px solid var(--line);border-radius:12px;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;text-align:center;gap:3px}
+  .flip-back{transform:rotateY(180deg);background:rgba(44,75,59,0.06)}
+  .flip-w{font-family:'Noto Serif SC','Songti SC','SimSun',serif;font-size:20px;font-weight:700}
+  .flip-cn{font-size:14px;font-weight:500}
+  .flip-ex{font-size:12px;color:var(--sub);line-height:1.45}
+  .rec-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px dashed var(--line)}
+  .rec-item:first-of-type{border-top:none}
+  .rec-type{flex:none;font-size:11.5px;font-weight:700;color:var(--chalk);background:var(--board);border-radius:999px;padding:2px 10px;margin-top:2px}
+  .rec-body{flex:1;min-width:0}
+  .rec-title{font-weight:600;font-size:14.5px}
+  .rec-why{font-size:12.5px;color:var(--sub)}
+  .passage{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:14px;line-height:1.75;margin:12px 0}
+  .passage .zh{color:var(--sub);font-size:12.5px;margin-top:6px}
+
   @media (max-width:480px){
     .app-title{font-size:20px}
     .board .line{font-size:18px}
@@ -147,14 +185,11 @@
   </header>
 
   <div class="meta-row">
-    <span class="lesson-meta">5 词汇 · 1 语法 · 3 练习 · 1 段领读</span>
+    <span class="lesson-meta">5 词汇 · 1 语法 · 3 练习 · 领读 · 今日拓展</span>
     <div class="progress">
       <span>本课进度</span>
-      <span class="dot" data-step="0"></span>
-      <span class="dot" data-step="1"></span>
-      <span class="dot" data-step="2"></span>
-      <span class="dot" data-step="3"></span>
-      <span id="progress-text">0/4</span>
+      <span id="progress-dots"></span>
+      <span id="progress-text">0/0</span>
       <button type="button" class="progress-reset" id="progress-reset">重置</button>
     </div>
   </div>
@@ -168,6 +203,7 @@
     <button type="button" class="tab" data-route="grammar">语法</button>
     <button type="button" class="tab" data-route="practice">练习</button>
     <button type="button" class="tab" data-route="listen">领读</button>
+    <button type="button" class="tab" data-route="extra">今日拓展</button>
   </nav>
 
   <!-- ===== 视图：词汇 ===== -->
@@ -258,6 +294,15 @@
         <li>跟不上的地方用下方单句按钮单独听，直到能跟上节拍。</li>
       </ol>
     </div>
+  </section>
+
+  <!-- ===== 视图：今日拓展 ===== -->
+  <section class="view" id="view-extra" data-route="extra">
+    <div class="extra-sec" id="ex-cafe"></div>
+    <div class="extra-sec" id="ex-pron"></div>
+    <div class="extra-sec" id="ex-kids"></div>
+    <div class="extra-sec" id="ex-cards"></div>
+    <div class="extra-sec" id="ex-culture"></div>
   </section>
 
 </div>
@@ -405,11 +450,91 @@
           { en:'Are you ready?', cn:'你准备好了吗？' },
           { en:'I watch TV in the evening.', cn:'我晚上看电视。' }
         ]
+      },
+      extra: {
+        cafe: {
+          topic: '工作',
+          desc: '假装我们是在咖啡厅的朋友，用英语聊天。先跟读这段开场对话，然后回到对话里和我真实演一遍（我说错你纠正我，你说错我纠正你）。',
+          lines: [
+            { who:'朋友', en:'Good morning! What do you want to drink?', cn:'早上好！你想喝点什么？' },
+            { who:'你', en:"I drink coffee in the morning. Coffee, please.", cn:'我早上喝咖啡。请给我咖啡。' },
+            { who:'朋友', en:'Good choice! Do you go to work now?', cn:'好选择！你现在去上班吗？' },
+            { who:'你', en:'Yes, I go to work at nine.', cn:'是的，我九点去上班。' },
+            { who:'朋友', en:'You are early today! Are you ready?', cn:'你今天来得真早！准备好了吗？' },
+            { who:'你', en:"Yes, I'm ready. See you in the evening!", cn:'是的，我准备好了。晚上见！' }
+          ]
+        },
+        pronunciation: [
+          {
+            en:'Good morning!',
+            ipa:'/ɡʊd ˈmɔːnɪŋ/',
+            huayin:'古德 摸宁',
+            tips:['morning 的 o 要圆唇、拉长，像“摸——宁”，不要读得又短又扁','Good 结尾的 d 轻收即可，不要用力爆出来','重音在 morning 的第一个音节']
+          },
+          {
+            en:'I drink coffee in the morning.',
+            ipa:'/aɪ drɪŋk ˈkɒfi ɪn ðə ˈmɔːnɪŋ/',
+            huayin:'爱 准克 咖啡 因 泽 摸宁',
+            tips:['drink 的 r 是轻轻带过，不是中文“准”那么重','coffee 两个 f 只发一个音：/ˈkɒfi/','in the 里的 the 要轻轻咬舌（th），中国人最常读成“泽”']
+          },
+          {
+            en:"I'm ready.",
+            ipa:'/aɪm ˈredi/',
+            huayin:'爱姆 瑞迪',
+            tips:["I'm 要连成一个音，不要读成“爱 姆”两个音节",'ready 的 e 是短元音，干脆利落，不要拖长','结尾 y 发轻轻的 /i/，收尾要轻']
+          }
+        ],
+        kids: {
+          rule:'今天学的语法，用小学生的话说就是：当我们说“我、你、我们”做什么事的时候，动词就保持原样，不加 s、不加 ing。比如“我喝咖啡”就是 I drink coffee，drink 不用变。就像中文说“我吃饭、你喝水、我们看电视”，动词都一样，英文也一样！',
+          examples:[
+            { en:'I watch TV.', cn:'我看电视。' },
+            { en:'You go to work.', cn:'你去上班。' },
+            { en:'We eat lunch.', cn:'我们吃午饭。' }
+          ]
+        },
+        cards: [
+          { w:'Morning', cn:'早晨', ex:'I drink coffee in the morning. 我早上喝咖啡。' },
+          { w:'Morning', cn:'早晨', ex:'Good morning! 早上好！' },
+          { w:'Morning', cn:'早晨', ex:'I go to work in the morning. 我早上去上班。' },
+          { w:'Morning', cn:'早晨', ex:'Morning is my favorite time. 早晨是我最喜欢的时候。' },
+          { w:'Evening', cn:'晚上', ex:'We watch TV in the evening. 我们晚上看电视。' },
+          { w:'Evening', cn:'晚上', ex:'Good evening! 晚上好！' },
+          { w:'Evening', cn:'晚上', ex:'I read a book in the evening. 我晚上看书。' },
+          { w:'Evening', cn:'晚上', ex:'See you in the evening! 晚上见！' },
+          { w:'Watch', cn:'看', ex:'I watch TV. 我看电视。' },
+          { w:'Watch', cn:'看', ex:'We watch a movie on Sunday. 我们周日看电影。' },
+          { w:'Watch', cn:'看', ex:'Do you watch football? 你看足球吗？' },
+          { w:'Watch', cn:'看', ex:'I watch the news every day. 我每天看新闻。' },
+          { w:'Early', cn:'早的', ex:'You are early today. 你今天来得很早。' },
+          { w:'Early', cn:'早的', ex:'I get up early. 我起得早。' },
+          { w:'Early', cn:'早的', ex:'Be early! Don\'t be late. 早点到！别迟到。' },
+          { w:'Early', cn:'早的', ex:'We start work early on Monday. 我们周一早上班。' },
+          { w:'Ready', cn:'准备好的', ex:"I'm ready. 我准备好了。" },
+          { w:'Ready', cn:'准备好的', ex:'Are you ready? 你准备好了吗？' },
+          { w:'Ready', cn:'准备好的', ex:'We are ready to go. 我们准备好出发了。' },
+          { w:'Ready', cn:'准备好的', ex:'Is the report ready? 报告准备好了吗？' }
+        ],
+        culture: {
+          recs: [
+            { type:'喜剧 · 电影', title:'The Intern（实习生）', why:'语速适中、职场题材，对白都是上班会用到的话' },
+            { type:'悬疑 · 剧集', title:'Stranger Things（怪奇物语）第一季', why:'剧情抓人、台词简单重复多，听下去不容易腻' },
+            { type:'科技 · 播客', title:'BBC 6 Minute English', why:'每集6分钟讲一个科技话题，语速慢、有字幕' }
+          ],
+          passage: 'Ben is 70 years old. He is old, but he wants to work. He goes to a company. The company sells clothes on the internet. Ben is an intern. Jules is the boss. She is young and busy. Ben helps her every day. He is early at work. He is happy.',
+          passageZh:'本70岁了。他年纪大了，但还想工作。他去了一家公司，这家公司在网上卖衣服。本是一名实习生。朱尔斯是老板，她年轻又忙碌。本每天都帮她。他上班总是很早。他工作得很开心。',
+          quiz: [
+            { t:'How old is Ben?', opts:['60','70','80'], a:'70' },
+            { t:'What does the company sell?', opts:['Coffee','Clothes','TV'], a:'Clothes' },
+            { t:'Who is the boss?', opts:['Ben','Jules','The intern'], a:'Jules' },
+            { t:'Is Ben early at work?', opts:['Yes, he is.','No, he isn\'t.'], a:'Yes, he is.' },
+            { t:'Is Ben happy at work?', opts:['Yes, he is.','No, he isn\'t.'], a:'Yes, he is.' }
+          ]
+        }
       }
     }
   };
 
-  var ROUTES = ['words', 'grammar', 'practice', 'listen'];
+  var ALL_ROUTES = ['words', 'grammar', 'practice', 'listen', 'extra'];
 
   /* 今天 / 昨天的日期键（用于自动标记课程） */
   function fmtDateKey(d){
@@ -432,11 +557,17 @@
     currentLesson = todayLesson || lessonKeys[lessonKeys.length - 1];
   }
 
-  var scores = { day1:0, day2:0 };
-  var checkedState = { day1:{ex1:false,ex2:false,ex3:false}, day2:{ex1:false,ex2:false,ex3:false} };
-  var prevScores = { day1:{ex1:0,ex2:0,ex3:0}, day2:{ex1:0,ex2:0,ex3:0} };
+  var scores = {};
+  var checkedState = {};
+  var prevScores = {};
+  Object.keys(LESSONS).forEach(function(k){
+    scores[k] = 0;
+    checkedState[k] = { ex1:false, ex2:false, ex3:false };
+    prevScores[k] = { ex1:0, ex2:0, ex3:0 };
+  });
 
   function lesson(){ return LESSONS[currentLesson]; }
+  function lessonRoutes(){ return lesson().extra ? ALL_ROUTES : ['words','grammar','practice','listen']; }
   function progKey(){ return 'dle_progress_' + currentLesson; }
 
   /* ===== 发音 ===== */
@@ -478,6 +609,9 @@
   function spkIcon(){
     return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
   }
+  function speaker(text, label){
+    return '<button type="button" class="spk" data-speak="' + escapeHtml(text) + '" aria-label="' + label + '">' + spkIcon() + '</button>';
+  }
 
   /* ===== 渲染：词汇 ===== */
   function buildWords(){
@@ -487,7 +621,7 @@
         + '<div class="card-head">'
         +   '<div><p class="word">' + it.w + '<span class="ipa">' + it.ipa + ' ' + it.pos + '</span></p>'
         +   '<p class="cn">' + it.cn + '</p></div>'
-        +   '<button type="button" class="spk" data-speak="' + it.w + '. ' + it.ex + '" aria-label="朗读 ' + it.w + '">' + spkIcon() + '</button>'
+        +   speaker(it.w + '. ' + it.ex, '朗读 ' + it.w)
         + '</div>'
         + '<p class="ex">' + it.ex + '</p>'
         + '<p class="ex-cn">' + it.excn + '</p>'
@@ -503,12 +637,13 @@
     document.getElementById('grammar-cards').innerHTML = g.cards.map(function(c){
       return '<div class="card"><div class="card-head">'
         + '<div><h3>' + c.t + '</h3></div>'
-        + '<button type="button" class="spk" data-speak="' + escapeHtml(c.speak) + '" aria-label="朗读例句">' + spkIcon() + '</button>'
+        + speaker(c.speak, '朗读例句')
         + '</div><p class="ex">' + c.ex + '</p><p class="ex-cn">' + c.excn + '</p></div>';
     }).join('');
     document.getElementById('grammar-extras').innerHTML = g.extras.map(function(c){
       return '<div class="card"><h3>' + c.t + '</h3><p class="ex">' + c.ex + '</p><p class="ex-cn">' + c.excn + '</p>'
-        + '<button type="button" class="spk" style="margin-top:10px" data-speak="' + escapeHtml(c.speak) + '" aria-label="朗读例句">' + spkIcon() + '</button></div>';
+        + speaker(c.speak, '朗读例句')
+        + '</div>';
     }).join('');
   }
 
@@ -613,17 +748,106 @@
     Object.keys(segments).forEach(function(key){
       var box = document.getElementById('seg-' + key);
       box.innerHTML = segments[key].map(function(it){
-        return '<div class="seg-item"><button type="button" class="spk" data-speak="' + escapeHtml(it.en) + '" aria-label="朗读">' + spkIcon() + '</button>'
+        return '<div class="seg-item">' + speaker(it.en, '朗读')
           + '<span class="seg-en">' + it.en + '</span>'
           + '<span class="seg-cn">' + it.cn + '</span></div>';
       }).join('');
     });
   }
 
+  /* ===== 渲染：今日拓展 ===== */
+  function buildExtra(){
+    var ex = lesson().extra;
+    if (!ex) { return; }
+
+    var cafe = document.getElementById('ex-cafe');
+    cafe.innerHTML = '<h3 class="sec-head">咖啡厅对话练习 · 话题：' + ex.cafe.topic + '</h3>'
+      + '<p class="sec-desc">' + ex.cafe.desc + '</p>'
+      + ex.cafe.lines.map(function(l){
+          return '<div class="dlg-line"><span class="dlg-who">' + l.who + '</span>'
+            + '<div class="dlg-body"><p class="dlg-en">' + l.en + '</p><p class="dlg-cn">' + l.cn + '</p></div>'
+            + speaker(l.en, '朗读这句')
+            + '</div>';
+        }).join('');
+
+    var pron = document.getElementById('ex-pron');
+    pron.innerHTML = '<h3 class="sec-head">发音拆解 · 今天 3 个关键句</h3>'
+      + '<p class="sec-desc">中文谐音只是辅助，多听、慢读、对照音标。</p>'
+      + ex.pronunciation.map(function(p){
+          var tips = p.tips.map(function(t){ return '<div>· ' + t + '</div>'; }).join('');
+          return '<div class="pron-item">'
+            + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="pron-en">' + p.en + '</span><span class="pron-ipa">' + p.ipa + '</span>' + speaker(p.en, '朗读') + '</div>'
+            + '<p class="pron-huayin">中文谐音：' + p.huayin + '</p>'
+            + '<div class="pron-tips">' + tips + '</div>'
+            + '</div>';
+        }).join('');
+
+    var kids = document.getElementById('ex-kids');
+    kids.innerHTML = '<h3 class="sec-head">儿童版语法 · 动词原形</h3>'
+      + '<div class="kids-rule">' + ex.kids.rule + '</div>'
+      + ex.kids.examples.map(function(e){
+          return '<div class="kids-ex"><b>' + e.en + '</b>　' + e.cn + '</div>';
+        }).join('');
+
+    var cards = document.getElementById('ex-cards');
+    cards.innerHTML = '<h3 class="sec-head">间隔重复记忆卡 · 20 张</h3>'
+      + '<p class="sec-desc">点击卡片翻面：正面单词，背面中文+真实场景例句。今天先过一遍，明天、后天各回来翻一次。</p>'
+      + '<div class="flip-grid">'
+      + ex.cards.map(function(c){
+          return '<div class="flip" tabindex="0" role="button" aria-label="翻转记忆卡">'
+            + '<div class="flip-in">'
+            + '<div class="flip-face"><span class="flip-w">' + c.w + '</span></div>'
+            + '<div class="flip-face flip-back"><span class="flip-cn">' + c.cn + '</span><span class="flip-ex">' + c.ex + '</span></div>'
+            + '</div></div>';
+        }).join('')
+      + '</div>';
+
+    var cul = document.getElementById('ex-culture');
+    var recs = ex.culture.recs.map(function(r){
+      return '<div class="rec-item"><span class="rec-type">' + r.type + '</span><div class="rec-body"><p class="rec-title">' + r.title + '</p><p class="rec-why">' + r.why + '</p></div></div>';
+    }).join('');
+    var quizHtml = '<div class="q-wrap" id="culture-quiz"></div>'
+      + '<div class="actions"><button type="button" class="btn" data-check="culture">检查答案</button></div>';
+    cul.innerHTML = '<h3 class="sec-head">文化沉浸挑战</h3>'
+      + recs
+      + '<div class="passage"><div>' + ex.culture.passage + '</div><div class="zh">' + ex.culture.passageZh + '</div></div>'
+      + '<p class="sec-desc">先听/读上面这段英语（电影《实习生》情节简介），再做 5 道理解题。</p>'
+      + quizHtml;
+    var qbox = document.getElementById('culture-quiz');
+    var qhtml = '';
+    ex.culture.quiz.forEach(function(it, i){
+      qhtml += '<div class="q" id="culture-q' + i + '"><span>' + escapeHtml(it.t) + '</span>' + radios('qz-' + i, it.opts) + '<span class="fb"></span></div>';
+    });
+    qbox.innerHTML = qhtml;
+  }
+  function checkCulture(){
+    var quiz = lesson().extra.culture.quiz;
+    var correct = 0;
+    quiz.forEach(function(it, i){
+      var el = document.querySelector('input[name="qz-' + i + '"]:checked');
+      var val = el ? el.value : '';
+      var ok = val.toLowerCase() === it.a.toLowerCase();
+      if (ok) { correct++; }
+      var fb = document.querySelector('#culture-q' + i + ' .fb');
+      fb.textContent = ok ? '答对了' : ('正确答案：' + it.a);
+      fb.className = 'fb ' + (ok ? 'ok' : 'no');
+    });
+    var total = quiz.length;
+    var msg = document.getElementById('culture-msg');
+    if (!msg) {
+      msg = document.createElement('div');
+      msg.id = 'culture-msg';
+      msg.style.cssText = 'margin-top:10px;font-size:13.5px;font-weight:600;color:var(--board);';
+      document.getElementById('ex-culture').appendChild(msg);
+    }
+    msg.textContent = '理解测试得分：' + correct + ' / ' + total + (correct === total ? ' —— 全对，太棒了！' : '，可以再听一遍。');
+  }
+
   /* ===== 路由与进度 ===== */
   function currentRoute(){
     var h = (location.hash || '#words').replace('#', '');
-    return ROUTES.indexOf(h) >= 0 ? h : 'words';
+    if (lessonRoutes().indexOf(h) >= 0) { return h; }
+    return 'words';
   }
   function loadProgress(){
     try {
@@ -635,23 +859,26 @@
     try { localStorage.setItem(progKey(), JSON.stringify(list)); } catch (e) {}
   }
   function renderProgress(){
+    var routes = lessonRoutes();
     var list = loadProgress();
-    ROUTES.forEach(function(r, i){
-      var dot = document.querySelector('.dot[data-step="' + i + '"]');
-      if (dot) { dot.classList.toggle('done', list.indexOf(r) >= 0); }
-    });
-    document.getElementById('progress-text').textContent = list.length + '/' + ROUTES.length;
+    var dots = document.getElementById('progress-dots');
+    dots.innerHTML = routes.map(function(r, i){
+      return '<span class="dot' + (list.indexOf(r) >= 0 ? ' done' : '') + '" data-step="' + i + '"></span>';
+    }).join('');
+    document.getElementById('progress-text').textContent = list.filter(function(r){ return routes.indexOf(r) >= 0; }).length + '/' + routes.length;
   }
   function renderTabs(){
+    var routes = lessonRoutes();
     var route = currentRoute();
-    ROUTES.forEach(function(r){
+    ALL_ROUTES.forEach(function(r){
       var view = document.getElementById('view-' + r);
       var tab = document.querySelector('.tab[data-route="' + r + '"]');
-      if (view) { view.classList.toggle('active', r === route); }
-      if (tab) { tab.classList.toggle('active', r === route); }
+      var inRoutes = routes.indexOf(r) >= 0;
+      if (view) { view.classList.toggle('active', inRoutes && r === route); }
+      if (tab) { tab.style.display = inRoutes ? '' : 'none'; tab.classList.toggle('active', inRoutes && r === route); }
     });
     var list = loadProgress();
-    if (list.indexOf(route) < 0) { list.push(route); saveProgress(list); }
+    if (routes.indexOf(route) >= 0 && list.indexOf(route) < 0) { list.push(route); saveProgress(list); }
     renderProgress();
   }
 
@@ -685,6 +912,7 @@
     buildGrammar();
     buildExercises();
     buildSegments();
+    buildExtra();
     renderLessonSwitch();
     document.querySelectorAll('.lesson-btn').forEach(function(b){
       b.classList.toggle('active', b.getAttribute('data-lesson') === currentLesson);
@@ -695,10 +923,16 @@
 
   /* ===== 事件 ===== */
   document.addEventListener('click', function(e){
+    var flip = e.target.closest('.flip');
+    if (flip) { flip.classList.toggle('flipped'); return; }
     var spkBtn = e.target.closest('[data-speak]');
     if (spkBtn) { speak(spkBtn.getAttribute('data-speak'), spkBtn); return; }
     var checkBtn = e.target.closest('[data-check]');
-    if (checkBtn) { checkExercise(checkBtn.getAttribute('data-check')); return; }
+    if (checkBtn) {
+      var kind = checkBtn.getAttribute('data-check');
+      if (kind === 'culture') { checkCulture(); } else { checkExercise(kind); }
+      return;
+    }
     var resetBtn = e.target.closest('[data-reset]');
     if (resetBtn) { resetExercise(resetBtn.getAttribute('data-reset')); return; }
     var tab = e.target.closest('.tab');
@@ -708,6 +942,7 @@
       currentLesson = lessonBtn.getAttribute('data-lesson');
       try { localStorage.setItem('dle_current_lesson', currentLesson); } catch (err) {}
       renderAll();
+      renderTabs();
       return;
     }
     var reset = e.target.closest('#progress-reset');
