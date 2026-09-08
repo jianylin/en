@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>20分钟英语练习课 · 入门</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --paper:#FAF6EC;
+    --ink:#222A36;
+    --sub:#5C6470;
+    --board:#2C4B3B;
+    --chalk:#F2EEDC;
+    --card:#FFFFFF;
+    --line:rgba(34,42,54,0.12);
+    --ok:#3E7C59;
+    --no:#C05545;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.65;font-size:15px}
+  .container{max-width:960px;margin:0 auto;padding:20px 16px 56px}
+  h1,h2,h3{font-family:'Noto Serif SC','Songti SC','SimSun',serif;line-height:1.3}
+  a{color:inherit}
+
+  /* ===== 顶部 ===== */
+  .app-header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:2px}
+  .app-title{font-size:22px;font-weight:700;margin:0}
+  .app-sub{color:var(--sub);font-size:13px;margin-top:2px}
+  .badges{display:flex;gap:6px;flex-wrap:wrap}
+  .badge{font-size:12px;color:var(--board);background:rgba(44,75,59,0.10);border:1px solid rgba(44,75,59,0.25);border-radius:999px;padding:2px 10px}
+  .meta-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0 12px}
+  .lesson-meta{color:var(--sub);font-size:12.5px}
+  .progress{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--sub)}
+  .dot{width:10px;height:10px;border-radius:50%;border:1px solid var(--line);background:transparent;flex:none}
+  .dot.done{background:var(--board);border-color:var(--board)}
+  .progress-reset{font-size:12px;color:var(--sub);text-decoration:underline;cursor:pointer;background:none;border:none;padding:0 0 0 8px}
+  .progress-reset:hover{color:var(--ink)}
+
+  /* ===== 课程切换 ===== */
+  .lesson-switch{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+  .lesson-btn{min-height:48px;padding:5px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;line-height:1.3;text-align:left}
+  .lesson-btn .d{display:block;font-size:11.5px;font-weight:400;opacity:.72;margin-top:1px}
+  .lesson-btn:hover{border-color:var(--board)}
+  .lesson-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .lesson-btn.active .d{opacity:.78}
+
+  /* ===== 导航 ===== */
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 20px}
+  .tab{min-height:44px;padding:0 18px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+  .tab:hover{border-color:var(--board)}
+  .tab.active{background:var(--board);color:var(--chalk);border-color:var(--board)}
+  .view{display:none}
+  .view.active{display:block}
+
+  /* ===== 黑板条 ===== */
+  .board{background:var(--board);color:var(--chalk);border-radius:14px;padding:16px 18px;margin:0 0 18px}
+  .board .kicker{font-size:12px;letter-spacing:.14em;opacity:.85;margin:0}
+  .board .line{font-family:'Noto Serif SC','Songti SC','SimSun',serif;font-size:21px;margin:6px 0 10px}
+  .board-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+  /* ===== 卡片 ===== */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .card h3{margin:0 0 10px;font-size:16px}
+  .card p{margin:0}
+  .word{font-family:'Noto Serif SC','Songti SC','SimSun',serif;font-size:26px;font-weight:700;line-height:1.2}
+  .ipa{color:var(--sub);font-size:13px;margin-left:6px}
+  .cn{font-size:15px;font-weight:500;margin:4px 0 10px}
+  .ex{font-size:13.5px}
+  .ex-cn{font-size:12.5px;color:var(--sub);margin-top:2px}
+  .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+
+  /* ===== 发音按钮 ===== */
+  .spk{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--board);cursor:pointer;flex:none;transition:transform .12s ease}
+  .spk:hover{border-color:var(--board)}
+  .spk:active{transform:scale(.93)}
+  .spk.on{background:var(--board);color:var(--chalk);border-color:var(--board)}
+  .board .spk{background:rgba(242,238,220,0.14);border-color:rgba(242,238,220,0.35);color:var(--chalk)}
+  .board .spk.on{background:var(--chalk);color:var(--board)}
+
+  /* ===== 语法 ===== */
+  .formula{font-family:'Noto Serif SC','Songti SC','SimSun',serif;font-size:19px;font-weight:700;text-align:center;padding:4px 0 2px}
+  .formula em{font-style:normal;background:rgba(242,238,220,0.22);border-radius:6px;padding:0 6px}
+  .grammar-note{font-size:13px;opacity:.9;text-align:center;margin-top:6px}
+  .two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
+
+  /* ===== 练习 ===== */
+  .excard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+  .excard h3{margin:0 0 4px;font-size:16px}
+  .ex-desc{color:var(--sub);font-size:12.5px;margin:0 0 10px}
+  .q{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;padding:11px 0;border-top:1px dashed var(--line);font-size:14.5px}
+  .q:first-of-type{border-top:none}
+  .q select{min-height:44px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:14px;padding:0 10px;font-family:inherit;max-width:170px}
+  .q select:focus{outline:2px solid rgba(44,75,59,0.4);outline-offset:1px}
+  .opts{display:flex;gap:4px 14px;flex-wrap:wrap;align-items:center}
+  .opts label{display:flex;align-items:center;gap:5px;cursor:pointer;min-height:40px;padding:0 4px}
+  .opts input{width:18px;height:18px;accent-color:var(--board)}
+  .fb{font-size:13px;font-weight:600;padding-left:8px}
+  .fb.ok{color:var(--ok)}
+  .fb.no{color:var(--no)}
+  .hint{color:var(--sub);font-size:12px;padding-left:8px}
+  .actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .btn{min-height:44px;padding:0 22px;border-radius:10px;border:1px solid var(--board);background:var(--board);color:var(--chalk);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+  .btn:hover{filter:brightness(1.08)}
+  .btn.ghost{background:var(--card);color:var(--board)}
+  .score-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(44,75,59,0.10);border:1px solid rgba(44,75,59,0.25);color:var(--board);border-radius:999px;padding:4px 14px;font-size:13.5px;font-weight:600;margin-bottom:14px}
+  .score-chip .ok{color:var(--ok);font-weight:700}
+
+  /* ===== 领读 ===== */
+  .audio-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+  .audio-card h3{margin:0 0 8px;font-size:16px}
+  audio{width:100%;display:block}
+  .audio-note{color:var(--sub);font-size:12px;margin:8px 0 0}
+  .seg-title{font-size:13px;font-weight:700;color:var(--board);margin:18px 0 4px;letter-spacing:.04em}
+  .seg-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px dashed var(--line);font-size:14.5px}
+  .seg-item:first-of-type{border-top:none}
+  .seg-en{font-family:'Noto Serif SC','Songti SC','SimSun',serif;font-weight:600}
+  .seg-cn{color:var(--sub);font-size:12.5px}
+  .steps{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .steps h3{margin:0 0 8px;font-size:16px}
+  .steps ol{margin:0;padding-left:20px}
+  .steps li{margin:6px 0;font-size:14px}
+
+  @media (max-width:480px){
+    .app-title{font-size:20px}
+    .board .line{font-size:18px}
+    .word{font-size:23px}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ===== 顶部 ===== -->
+  <header class="app-header">
+    <div>
+      <h1 class="app-title">20分钟英语练习课</h1>
+      <p class="app-sub" id="lesson-date"></p>
+    </div>
+    <div class="badges">
+      <span class="badge">入门</span>
+      <span class="badge">职场 · 日常口语</span>
+      <span class="badge">20分钟</span>
+    </div>
+  </header>
+
+  <div class="meta-row">
+    <span class="lesson-meta">5 词汇 · 1 语法 · 3 练习 · 1 段领读</span>
+    <div class="progress">
+      <span>本课进度</span>
+      <span class="dot" data-step="0"></span>
+      <span class="dot" data-step="1"></span>
+      <span class="dot" data-step="2"></span>
+      <span class="dot" data-step="3"></span>
+      <span id="progress-text">0/4</span>
+      <button type="button" class="progress-reset" id="progress-reset">重置</button>
+    </div>
+  </div>
+
+  <!-- ===== 课程切换（按日期自动生成，自动标记今天/昨天） ===== -->
+  <div class="lesson-switch" id="lesson-switch"></div>
+
+  <!-- ===== 导航 ===== -->
+  <nav class="tabs" aria-label="课程板块">
+    <button type="button" class="tab" data-route="words">今日词汇</button>
+    <button type="button" class="tab" data-route="grammar">语法</button>
+    <button type="button" class="tab" data-route="practice">练习</button>
+    <button type="button" class="tab" data-route="listen">领读</button>
+  </nav>
+
+  <!-- ===== 视图：词汇 ===== -->
+  <section class="view" id="view-words" data-route="words">
+    <div class="board">
+      <p class="kicker">TODAY'S SENTENCE · 今日金句</p>
+      <div class="board-row">
+        <p class="line" id="today-sentence"></p>
+        <button type="button" class="spk" aria-label="朗读今日金句">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="grid" id="word-cards"></div>
+    <p style="color:var(--sub);font-size:12.5px;margin-top:12px">点击单词卡右上角的喇叭即可听发音，每个词会先读单词、再读例句。</p>
+  </section>
+
+  <!-- ===== 视图：语法 ===== -->
+  <section class="view" id="view-grammar" data-route="grammar">
+    <div class="board">
+      <p class="kicker">GRAMMAR · 今日语法</p>
+      <p class="formula" id="grammar-formula"></p>
+      <p class="grammar-note" id="grammar-note"></p>
+    </div>
+
+    <div class="grid" id="grammar-cards"></div>
+    <div class="two-col" id="grammar-extras"></div>
+  </section>
+
+  <!-- ===== 视图：练习 ===== -->
+  <section class="view" id="view-practice" data-route="practice">
+    <div class="score-chip" id="score-chip" hidden>今日得分 <span id="score-num" class="ok">0</span> / 12</div>
+
+    <div class="excard" id="ex1">
+      <h3>练习1 · 选词填空</h3>
+      <p class="ex-desc">从今天学的 5 个词中选择，把句子补充完整。</p>
+      <div class="q-wrap"></div>
+      <div class="actions">
+        <button type="button" class="btn" data-check="ex1">检查答案</button>
+        <button type="button" class="btn ghost" data-reset="ex1">重新作答</button>
+      </div>
+    </div>
+
+    <div class="excard" id="ex2">
+      <h3>练习2 · 语法选择</h3>
+      <p class="ex-desc">选择正确的答案，把句子补充完整。</p>
+      <div class="q-wrap"></div>
+      <div class="actions">
+        <button type="button" class="btn" data-check="ex2">检查答案</button>
+        <button type="button" class="btn ghost" data-reset="ex2">重新作答</button>
+      </div>
+    </div>
+
+    <div class="excard" id="ex3">
+      <h3>练习3 · 迷你对话补全</h3>
+      <p class="ex-desc">把对话补充完整。</p>
+      <div class="q-wrap"></div>
+      <div class="actions">
+        <button type="button" class="btn" data-check="ex3">检查答案</button>
+        <button type="button" class="btn ghost" data-reset="ex3">重新作答</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 视图：领读 ===== -->
+  <section class="view" id="view-listen" data-route="listen">
+    <div class="audio-card">
+      <h3>整课领读音频</h3>
+      <audio id="audio-player" controls preload="none"></audio>
+      <p class="audio-note">老师领读全课：先中文讲解，再慢速读两遍，留出时间给你跟读。在线播放需要网络。</p>
+    </div>
+
+    <p class="seg-title">① 词汇跟读（5 个词）</p>
+    <div class="audio-card" style="padding-top:4px" id="seg-words"></div>
+
+    <p class="seg-title">② 句子跟读（3 个关键句）</p>
+    <div class="audio-card" style="padding-top:4px" id="seg-sentences"></div>
+
+    <p class="seg-title">③ 重点句巩固</p>
+    <div class="audio-card" style="padding-top:4px" id="seg-keys"></div>
+
+    <div class="steps">
+      <h3>怎么跟读</h3>
+      <ol>
+        <li>先完整听一遍整课音频，只听不读。</li>
+        <li>第二遍播放时，每读完一个词或句子就暂停，自己跟着读一遍。</li>
+        <li>跟不上的地方用下方单句按钮单独听，直到能跟上节拍。</li>
+      </ol>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ===== 课程数据 ===== */
+  var LESSONS = {
+    day1: {
+      dateKey: '2026-09-07',
+      label: '第1课',
+      date: '9月7日 · 周一',
+      sentence: "Today is Monday. I'm happy.",
+      audio: 'https://aka.doubaocdn.com/s/d2V1FakY2Z',
+      wordOptions: ['work', 'today', 'coffee', 'lunch', 'happy'],
+      words: [
+        { w:'Work', ipa:'/wɜːk/', pos:'n. & v.', cn:'工作', ex:'I go to work at nine.', excn:'我九点去上班。' },
+        { w:'Today', ipa:'/təˈdeɪ/', pos:'adv.', cn:'今天', ex:'Today is Monday.', excn:'今天是周一。' },
+        { w:'Coffee', ipa:'/ˈkɒfi/', pos:'n.', cn:'咖啡', ex:'I drink coffee in the morning.', excn:'我早上喝咖啡。' },
+        { w:'Lunch', ipa:'/lʌntʃ/', pos:'n.', cn:'午饭', ex:'I eat lunch at twelve.', excn:'我12点吃午饭。' },
+        { w:'Happy', ipa:'/ˈhæpi/', pos:'adj.', cn:'开心的', ex:"I'm happy.", excn:'我很开心。' }
+      ],
+      grammar: {
+        formula: '主语 + <em>am / is / are</em> + 其他',
+        note: '口诀：我 am · 你 are · 它 is',
+        cards: [
+          { t:'I am（我是）', ex:"I'm happy.", excn:'我很开心。', speak:"I'm happy." },
+          { t:'You / We are（你是 / 我们是）', ex:'You are early.', excn:'你来得早。', speak:'You are early.' },
+          { t:'It / He / She is（它是 / 他是 / 她是）', ex:'Today is Monday.', excn:'今天是周一。', speak:'Today is Monday.' }
+        ],
+        extras: [
+          { t:'否定：be + not（不是）', ex:"I'm not tired.", excn:'我不累。', speak:"I'm not tired." },
+          { t:'疑问：be 提前（是吗？）', ex:'Are you happy?', excn:'你开心吗？', speak:'Are you happy?' }
+        ]
+      },
+      exercises: {
+        ex1: {
+          items: [
+            { t:'I drink ______ in the morning.', a:'coffee', hint:'咖啡' },
+            { t:'I go to ______ at nine.', a:'work', hint:'工作' },
+            { t:'I am happy ______.', a:'today', hint:'今天' },
+            { t:'I eat ______ at twelve.', a:'lunch', hint:'午饭' },
+            { t:"I'm ______.", a:'happy', hint:'开心的' }
+          ]
+        },
+        ex2: {
+          items: [
+            { t:'I ______ happy.', a:'am', opts:['am','is','are'] },
+            { t:'It ______ Monday today.', a:'is', opts:['am','is','are'] },
+            { t:'______ you happy?', a:'Are', opts:['Am','Is','Are'] }
+          ]
+        },
+        ex3: {
+          items: [
+            { t:'A: Hello! I ______ Tom.', a:'am', opts:['am','is','are'] },
+            { t:'B: Hi, Tom! I drink ______ every morning.', a:'coffee', hint:'咖啡' },
+            { t:'A: Nice! I go to ______ at nine.', a:'work', hint:'工作' },
+            { t:"B: Great. I'm ______ today!", a:'happy', hint:'开心的' }
+          ]
+        }
+      },
+      segments: {
+        words: [
+          { en:'Work.', cn:'工作' }, { en:'Today.', cn:'今天' }, { en:'Coffee.', cn:'咖啡' },
+          { en:'Lunch.', cn:'午饭' }, { en:'Happy.', cn:'开心的' }
+        ],
+        sentences: [
+          { en:"Hello! I'm Tom.", cn:'你好，我是汤姆。' },
+          { en:"I'm happy today.", cn:'我今天很开心。' },
+          { en:'Today is Monday.', cn:'今天是周一。' }
+        ],
+        keys: [
+          { en:"I'm happy.", cn:'我很开心。' },
+          { en:'Today is Monday.', cn:'今天是周一。' }
+        ]
+      }
+    },
+
+    day2: {
+      dateKey: '2026-09-08',
+      label: '第2课',
+      date: '9月8日 · 周二',
+      sentence: 'Good morning! Are you ready?',
+      audio: 'https://aka.doubaocdn.com/s/Ez6C2GOQbg',
+      wordOptions: ['morning', 'evening', 'watch', 'early', 'ready'],
+      words: [
+        { w:'Morning', ipa:'/ˈmɔːnɪŋ/', pos:'n.', cn:'早晨', ex:'I drink coffee in the morning.', excn:'我早上喝咖啡。' },
+        { w:'Evening', ipa:'/ˈiːvnɪŋ/', pos:'n.', cn:'晚上', ex:'We watch TV in the evening.', excn:'我们晚上看电视。' },
+        { w:'Watch', ipa:'/wɒtʃ/', pos:'v.', cn:'看', ex:'I watch TV.', excn:'我看电视。' },
+        { w:'Early', ipa:'/ˈɜːli/', pos:'adj.', cn:'早的', ex:'You are early.', excn:'你来得早。' },
+        { w:'Ready', ipa:'/ˈredi/', pos:'adj.', cn:'准备好的', ex:"I'm ready.", excn:'我准备好了。' }
+      ],
+      grammar: {
+        formula: '主语 + <em>动词原形</em>（I / You / We）',
+        note: '表示习惯和事实：我喝 · 你去 · 我们看',
+        cards: [
+          { t:'I（我）', ex:'I drink coffee.', excn:'我喝咖啡。', speak:'I drink coffee.' },
+          { t:'You（你 / 你们）', ex:'You go to work at nine.', excn:'你九点去上班。', speak:'You go to work at nine.' },
+          { t:'We（我们）', ex:'We watch TV in the evening.', excn:'我们晚上看电视。', speak:'We watch TV in the evening.' }
+        ],
+        extras: [
+          { t:"否定：don't（不）", ex:"I don't drink coffee.", excn:'我不喝咖啡。', speak:"I don't drink coffee." },
+          { t:'疑问：Do...?（是吗？）', ex:'Do you drink coffee?', excn:'你喝咖啡吗？', speak:'Do you drink coffee?' }
+        ]
+      },
+      exercises: {
+        ex1: {
+          items: [
+            { t:'I drink coffee in the ______.', a:'morning', hint:'早晨' },
+            { t:'I ______ TV in the evening.', a:'watch', hint:'看' },
+            { t:'You are ______ today.', a:'early', hint:'早的' },
+            { t:"I'm ______. Let's go!", a:'ready', hint:'准备好的' },
+            { t:'We watch TV in the ______.', a:'evening', hint:'晚上' }
+          ]
+        },
+        ex2: {
+          items: [
+            { t:'I ______ coffee in the morning.', a:'drink', opts:['drink','drinks','drinking'] },
+            { t:'We ______ TV in the evening.', a:'watch', opts:['watches','watch','watching'] },
+            { t:'______ you drink coffee?', a:'Do', opts:['Do','Does','Are'] }
+          ]
+        },
+        ex3: {
+          items: [
+            { t:'A: Good ______! Are you ready?', a:'morning', hint:'早晨' },
+            { t:'B: Yes, I am. You are ______ today!', a:'early', hint:'早的' },
+            { t:'A: Great. I ______ TV in the evening.', a:'watch', hint:'看' },
+            { t:'B: Me too. See you in the ______!', a:'evening', hint:'晚上' }
+          ]
+        }
+      },
+      segments: {
+        words: [
+          { en:'Morning.', cn:'早晨' }, { en:'Evening.', cn:'晚上' }, { en:'Watch.', cn:'看' },
+          { en:'Early.', cn:'早的' }, { en:'Ready.', cn:'准备好的' }
+        ],
+        sentences: [
+          { en:'Good morning!', cn:'早上好！' },
+          { en:'I drink coffee in the morning.', cn:'我早上喝咖啡。' },
+          { en:"I'm ready.", cn:'我准备好了。' }
+        ],
+        keys: [
+          { en:'Are you ready?', cn:'你准备好了吗？' },
+          { en:'I watch TV in the evening.', cn:'我晚上看电视。' }
+        ]
+      }
+    }
+  };
+
+  var ROUTES = ['words', 'grammar', 'practice', 'listen'];
+
+  /* 今天 / 昨天的日期键（用于自动标记课程） */
+  function fmtDateKey(d){
+    var y = d.getFullYear();
+    var m = ('0' + (d.getMonth() + 1)).slice(-2);
+    var dd = ('0' + d.getDate()).slice(-2);
+    return y + '-' + m + '-' + dd;
+  }
+  var todayKey = fmtDateKey(new Date());
+  var yesterdayKey = fmtDateKey(new Date(Date.now() - 86400000));
+
+  var currentLesson = null;
+  try {
+    var savedLesson = localStorage.getItem('dle_current_lesson');
+    if (LESSONS[savedLesson]) { currentLesson = savedLesson; }
+  } catch (e) {}
+  if (!currentLesson) {
+    var lessonKeys = Object.keys(LESSONS);
+    var todayLesson = lessonKeys.filter(function(k){ return LESSONS[k].dateKey === todayKey; })[0];
+    currentLesson = todayLesson || lessonKeys[lessonKeys.length - 1];
+  }
+
+  var scores = { day1:0, day2:0 };
+  var checkedState = { day1:{ex1:false,ex2:false,ex3:false}, day2:{ex1:false,ex2:false,ex3:false} };
+  var prevScores = { day1:{ex1:0,ex2:0,ex3:0}, day2:{ex1:0,ex2:0,ex3:0} };
+
+  function lesson(){ return LESSONS[currentLesson]; }
+  function progKey(){ return 'dle_progress_' + currentLesson; }
+
+  /* ===== 发音 ===== */
+  var voiceCache = null;
+  function pickVoice(){
+    if (voiceCache) return voiceCache;
+    var voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+    var v = voices.filter(function(v){ return /^en/i.test(v.lang); })
+      .sort(function(a, b){
+        var an = /natural/i.test(a.name) ? 1 : 0;
+        var bn = /natural/i.test(b.name) ? 1 : 0;
+        return bn - an;
+      })[0] || null;
+    voiceCache = v;
+    return v;
+  }
+  if (window.speechSynthesis) {
+    speechSynthesis.onvoiceschanged = function(){ voiceCache = null; };
+  }
+  function speak(text, btn){
+    if (!window.speechSynthesis) { return; }
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = 0.82;
+    u.pitch = 1;
+    var v = pickVoice();
+    if (v) { u.voice = v; }
+    if (btn) { btn.classList.add('on'); }
+    u.onend = function(){ if (btn) { btn.classList.remove('on'); } };
+    u.onerror = function(){ if (btn) { btn.classList.remove('on'); } };
+    speechSynthesis.speak(u);
+  }
+
+  /* ===== 工具 ===== */
+  function escapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function spkIcon(){
+    return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+  }
+
+  /* ===== 渲染：词汇 ===== */
+  function buildWords(){
+    var box = document.getElementById('word-cards');
+    box.innerHTML = lesson().words.map(function(it){
+      return '<div class="card">'
+        + '<div class="card-head">'
+        +   '<div><p class="word">' + it.w + '<span class="ipa">' + it.ipa + ' ' + it.pos + '</span></p>'
+        +   '<p class="cn">' + it.cn + '</p></div>'
+        +   '<button type="button" class="spk" data-speak="' + it.w + '. ' + it.ex + '" aria-label="朗读 ' + it.w + '">' + spkIcon() + '</button>'
+        + '</div>'
+        + '<p class="ex">' + it.ex + '</p>'
+        + '<p class="ex-cn">' + it.excn + '</p>'
+        + '</div>';
+    }).join('');
+  }
+
+  /* ===== 渲染：语法 ===== */
+  function buildGrammar(){
+    var g = lesson().grammar;
+    document.getElementById('grammar-formula').innerHTML = g.formula;
+    document.getElementById('grammar-note').textContent = g.note;
+    document.getElementById('grammar-cards').innerHTML = g.cards.map(function(c){
+      return '<div class="card"><div class="card-head">'
+        + '<div><h3>' + c.t + '</h3></div>'
+        + '<button type="button" class="spk" data-speak="' + escapeHtml(c.speak) + '" aria-label="朗读例句">' + spkIcon() + '</button>'
+        + '</div><p class="ex">' + c.ex + '</p><p class="ex-cn">' + c.excn + '</p></div>';
+    }).join('');
+    document.getElementById('grammar-extras').innerHTML = g.extras.map(function(c){
+      return '<div class="card"><h3>' + c.t + '</h3><p class="ex">' + c.ex + '</p><p class="ex-cn">' + c.excn + '</p>'
+        + '<button type="button" class="spk" style="margin-top:10px" data-speak="' + escapeHtml(c.speak) + '" aria-label="朗读例句">' + spkIcon() + '</button></div>';
+    }).join('');
+  }
+
+  /* ===== 渲染：练习 ===== */
+  function blankSelect(id, options){
+    var html = '<select id="' + id + '" aria-label="请选择"><option value="">—— 请选择 ——</option>';
+    options.forEach(function(o){
+      html += '<option value="' + o + '">' + o + '</option>';
+    });
+    html += '</select>';
+    return html;
+  }
+  function radios(name, opts){
+    var html = '<span class="opts">';
+    opts.forEach(function(o){
+      html += '<label><input type="radio" name="' + name + '" value="' + o + '">' + o + '</label>';
+    });
+    html += '</span>';
+    return html;
+  }
+  function buildExercises(){
+    var exercises = lesson().exercises;
+    var options = lesson().wordOptions;
+    Object.keys(exercises).forEach(function(key){
+      var data = exercises[key];
+      var box = document.querySelector('#' + key + ' .q-wrap');
+      var html = '';
+      data.items.forEach(function(it, i){
+        var qid = key + '-q' + i;
+        if (it.opts) {
+          html += '<div class="q" id="' + qid + '"><span>' + escapeHtml(it.t) + '</span>' + radios(key + '-r' + i, it.opts) + '<span class="fb"></span></div>';
+        } else {
+          var parts = it.t.split('______');
+          html += '<div class="q" id="' + qid + '"><span>' + escapeHtml(parts[0]) + '</span>' + blankSelect(key + '-s' + i, options) + '<span>' + escapeHtml(parts[1]) + '</span><span class="hint">（' + it.hint + '）</span><span class="fb"></span></div>';
+        }
+      });
+      box.innerHTML = html;
+    });
+  }
+
+  function valOf(key, i, item){
+    var el;
+    if (item.opts) {
+      el = document.querySelector('input[name="' + key + '-r' + i + '"]:checked');
+      return el ? el.value : '';
+    }
+    el = document.getElementById(key + '-s' + i);
+    return el ? el.value : '';
+  }
+  function checkExercise(key){
+    var data = lesson().exercises[key];
+    var correct = 0;
+    data.items.forEach(function(it, i){
+      var val = valOf(key, i, it);
+      var ok = val.toLowerCase() === it.a.toLowerCase();
+      if (ok) { correct++; }
+      var fb = document.querySelector('#' + key + '-q' + i + ' .fb');
+      fb.textContent = ok ? '答对了' : ('正确答案：' + it.a);
+      fb.className = 'fb ' + (ok ? 'ok' : 'no');
+      var controls = document.querySelectorAll('#' + key + '-q' + i + ' select, #' + key + '-q' + i + ' input');
+      controls.forEach(function(c){ c.disabled = true; });
+    });
+    if (!checkedState[currentLesson][key]) {
+      scores[currentLesson] += correct;
+      checkedState[currentLesson][key] = true;
+    } else {
+      scores[currentLesson] -= prevScores[currentLesson][key];
+      scores[currentLesson] += correct;
+    }
+    prevScores[currentLesson][key] = correct;
+    renderScore();
+  }
+  function resetExercise(key){
+    var data = lesson().exercises[key];
+    data.items.forEach(function(it, i){
+      var q = document.getElementById(key + '-q' + i);
+      var inputs = q.querySelectorAll('input');
+      var sel = q.querySelector('select');
+      inputs.forEach(function(inp){ inp.checked = false; inp.disabled = false; });
+      if (sel) { sel.value = ''; sel.disabled = false; }
+      var fb = q.querySelector('.fb');
+      fb.textContent = '';
+      fb.className = 'fb';
+    });
+    if (checkedState[currentLesson][key]) {
+      scores[currentLesson] -= prevScores[currentLesson][key];
+      checkedState[currentLesson][key] = false;
+      prevScores[currentLesson][key] = 0;
+    }
+    renderScore();
+  }
+  function renderScore(){
+    var chip = document.getElementById('score-chip');
+    var num = document.getElementById('score-num');
+    num.textContent = scores[currentLesson];
+    if (scores[currentLesson] > 0) { chip.hidden = false; } else { chip.hidden = true; }
+  }
+
+  /* ===== 渲染：领读 ===== */
+  function buildSegments(){
+    var segments = lesson().segments;
+    Object.keys(segments).forEach(function(key){
+      var box = document.getElementById('seg-' + key);
+      box.innerHTML = segments[key].map(function(it){
+        return '<div class="seg-item"><button type="button" class="spk" data-speak="' + escapeHtml(it.en) + '" aria-label="朗读">' + spkIcon() + '</button>'
+          + '<span class="seg-en">' + it.en + '</span>'
+          + '<span class="seg-cn">' + it.cn + '</span></div>';
+      }).join('');
+    });
+  }
+
+  /* ===== 路由与进度 ===== */
+  function currentRoute(){
+    var h = (location.hash || '#words').replace('#', '');
+    return ROUTES.indexOf(h) >= 0 ? h : 'words';
+  }
+  function loadProgress(){
+    try {
+      var raw = localStorage.getItem(progKey());
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+  function saveProgress(list){
+    try { localStorage.setItem(progKey(), JSON.stringify(list)); } catch (e) {}
+  }
+  function renderProgress(){
+    var list = loadProgress();
+    ROUTES.forEach(function(r, i){
+      var dot = document.querySelector('.dot[data-step="' + i + '"]');
+      if (dot) { dot.classList.toggle('done', list.indexOf(r) >= 0); }
+    });
+    document.getElementById('progress-text').textContent = list.length + '/' + ROUTES.length;
+  }
+  function renderTabs(){
+    var route = currentRoute();
+    ROUTES.forEach(function(r){
+      var view = document.getElementById('view-' + r);
+      var tab = document.querySelector('.tab[data-route="' + r + '"]');
+      if (view) { view.classList.toggle('active', r === route); }
+      if (tab) { tab.classList.toggle('active', r === route); }
+    });
+    var list = loadProgress();
+    if (list.indexOf(route) < 0) { list.push(route); saveProgress(list); }
+    renderProgress();
+  }
+
+  /* ===== 课程切换 ===== */
+  function relationFor(dateKey){
+    if (dateKey === todayKey) { return '今天'; }
+    if (dateKey === yesterdayKey) { return '昨天'; }
+    return '';
+  }
+  function renderLessonSwitch(){
+    var box = document.getElementById('lesson-switch');
+    box.innerHTML = Object.keys(LESSONS).map(function(k){
+      var L = LESSONS[k];
+      var rel = relationFor(L.dateKey);
+      var main = (rel ? rel + ' · ' : '') + L.label;
+      return '<button type="button" class="lesson-btn" data-lesson="' + k + '">'
+        + '<span>' + main + '</span>'
+        + '<span class="d">' + L.date + '</span></button>';
+    }).join('');
+  }
+
+  /* ===== 整页渲染 ===== */
+  function renderAll(){
+    var L = lesson();
+    document.getElementById('lesson-date').textContent = L.label + ' · ' + L.date;
+    document.getElementById('today-sentence').textContent = L.sentence;
+    var boardRow = document.getElementById('today-sentence').parentNode;
+    boardRow.querySelector('.spk').setAttribute('data-speak', L.sentence);
+    document.getElementById('audio-player').src = L.audio;
+    buildWords();
+    buildGrammar();
+    buildExercises();
+    buildSegments();
+    renderLessonSwitch();
+    document.querySelectorAll('.lesson-btn').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-lesson') === currentLesson);
+    });
+    renderProgress();
+    renderScore();
+  }
+
+  /* ===== 事件 ===== */
+  document.addEventListener('click', function(e){
+    var spkBtn = e.target.closest('[data-speak]');
+    if (spkBtn) { speak(spkBtn.getAttribute('data-speak'), spkBtn); return; }
+    var checkBtn = e.target.closest('[data-check]');
+    if (checkBtn) { checkExercise(checkBtn.getAttribute('data-check')); return; }
+    var resetBtn = e.target.closest('[data-reset]');
+    if (resetBtn) { resetExercise(resetBtn.getAttribute('data-reset')); return; }
+    var tab = e.target.closest('.tab');
+    if (tab) { location.hash = tab.getAttribute('data-route'); return; }
+    var lessonBtn = e.target.closest('.lesson-btn');
+    if (lessonBtn) {
+      currentLesson = lessonBtn.getAttribute('data-lesson');
+      try { localStorage.setItem('dle_current_lesson', currentLesson); } catch (err) {}
+      renderAll();
+      return;
+    }
+    var reset = e.target.closest('#progress-reset');
+    if (reset) { saveProgress([]); renderProgress(); }
+  });
+  window.addEventListener('hashchange', renderTabs);
+
+  /* ===== 初始化 ===== */
+  if (!location.hash) { location.hash = 'words'; }
+  renderAll();
+  renderTabs();
+})();
+</script>
+</body>
+</html>
