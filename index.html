@@ -904,7 +904,7 @@
   }
 
   /* ===== 顺序播放器 ===== */
-  var play = { idx: 0, audio: null, running: false };
+  var play = { idx: 0, rep: 0, audio: null, state: 'idle' };
   function buildPlaylist(){
     var L = lesson();
     var seq = [{ en: L.sentence, cn: '今日金句' }];
@@ -921,39 +921,86 @@
     list.innerHTML = seq.map(function(s, i){
       return '<div class="player-item" data-pt="' + i + '"><span class="idx">' + (i + 1) + '</span><span>' + s.en + '</span><span style="color:var(--sub);font-size:12px">' + s.cn + '</span></div>';
     }).join('');
-    document.getElementById('btn-play').textContent = play.running ? '暂停' : '播放整课';
-    document.getElementById('player-now').textContent = play.running
-      ? '正在读：' + seq[play.idx].en
-      : '点击「播放整课」，跟着老师音从头跟读一遍';
+    var btn = document.getElementById('btn-play');
+    if (play.state === 'playing') { btn.textContent = '暂停'; }
+    else if (play.state === 'paused') { btn.textContent = '继续'; }
+    else { btn.textContent = '播放整课'; }
+    var now = document.getElementById('player-now');
+    if (play.state === 'playing') {
+      now.textContent = '正在读：' + seq[play.idx].en + '（第' + (play.rep + 1) + '遍，读完请跟读）';
+    } else if (play.state === 'paused') {
+      now.textContent = '已暂停：' + seq[play.idx].en + '，点「继续」接着读';
+    } else if (play.state === 'done') {
+      now.textContent = '整课播放完毕！点「播放整课」从头再来一遍';
+    } else {
+      now.textContent = '点击「播放整课」：每句老师读两遍，句间留出跟读时间';
+    }
+    document.querySelectorAll('.player-item').forEach(function(el){
+      el.classList.toggle('playing', play.state === 'playing' && parseInt(el.getAttribute('data-pt'), 10) === play.idx);
+    });
   }
-  function stopPlayer(){
-    play.running = false;
+  function stopPlayer(paused){
+    play.state = paused ? 'paused' : 'done';
     if (play.audio) { try { play.audio.pause(); } catch (err) {} }
     renderPlaylist();
   }
   function playFrom(idx, auto){
     var seq = buildPlaylist();
     if (idx < 0) { idx = 0; }
-    if (idx >= seq.length) { stopPlayer(); return; }
+    if (idx >= seq.length) {
+      play.idx = 0;
+      play.rep = 0;
+      stopPlayer(false);
+      return;
+    }
     var url = lesson().audioMap[seq[idx].en];
     if (!url) { if (auto) { playFrom(idx + 1, true); } return; }
     if (play.audio) { try { play.audio.pause(); } catch (err) {} }
     var a = new Audio(url);
     play.audio = a;
     play.idx = idx;
-    play.running = true;
-    document.getElementById('player-now').textContent = '正在读：' + seq[idx].en;
+    play.state = 'playing';
+    document.getElementById('player-now').textContent = '正在读：' + seq[idx].en + '（第' + (play.rep + 1) + '遍，读完请跟读）';
     document.querySelectorAll('.player-item').forEach(function(el){
       el.classList.toggle('playing', parseInt(el.getAttribute('data-pt'), 10) === idx);
     });
     document.getElementById('btn-play').textContent = '暂停';
     a.play();
-    a.onended = function(){ if (play.running) { playFrom(idx + 1, true); } };
-    a.onerror = function(){ if (play.running) { playFrom(idx + 1, true); } };
+    a.onended = function(){
+      if (play.state !== 'playing') { return; }
+      if (play.rep < 1) {
+        play.rep = play.rep + 1;
+        setTimeout(function(){ if (play.state === 'playing') { playFrom(play.idx, false); } }, 600);
+      } else {
+        play.rep = 0;
+        document.getElementById('player-now').textContent = '跟读中…（下一句马上来）';
+        setTimeout(function(){ if (play.state === 'playing') { playFrom(play.idx + 1, true); } }, 2500);
+      }
+    };
+    a.onerror = function(){
+      if (play.state !== 'playing') { return; }
+      if (play.rep < 1) {
+        play.rep = play.rep + 1;
+        setTimeout(function(){ if (play.state === 'playing') { playFrom(play.idx, false); } }, 600);
+      } else {
+        play.rep = 0;
+        setTimeout(function(){ if (play.state === 'playing') { playFrom(play.idx + 1, true); } }, 2500);
+      }
+    };
   }
   function togglePlay(){
-    if (play.running) { stopPlayer(); return; }
-    playFrom(play.idx, false);
+    if (play.state === 'playing') {
+      stopPlayer(true);
+      return;
+    }
+    if (play.state === 'paused') {
+      play.rep = 0;
+      playFrom(play.idx, false);
+      return;
+    }
+    play.idx = 0;
+    play.rep = 0;
+    playFrom(0, false);
   }
 
   /* ===== 路由与进度 ===== */
@@ -1028,6 +1075,10 @@
     buildExercises();
     buildSegments();
     buildExtra();
+    play.state = 'idle';
+    play.idx = 0;
+    play.rep = 0;
+    if (play.audio) { try { play.audio.pause(); } catch (err) {} }
     renderPlaylist();
     renderLessonSwitch();
     document.querySelectorAll('.lesson-btn').forEach(function(b){
@@ -1044,11 +1095,11 @@
     var playBtn = e.target.closest('#btn-play');
     if (playBtn) { togglePlay(); return; }
     var prevBtn = e.target.closest('#btn-prev');
-    if (prevBtn) { playFrom(play.idx - 1, false); return; }
+    if (prevBtn) { play.rep = 0; playFrom(play.idx - 1, false); return; }
     var nextBtn = e.target.closest('#btn-next');
-    if (nextBtn) { playFrom(play.idx + 1, false); return; }
+    if (nextBtn) { play.rep = 0; playFrom(play.idx + 1, false); return; }
     var pItem = e.target.closest('.player-item');
-    if (pItem) { playFrom(parseInt(pItem.getAttribute('data-pt'), 10), false); return; }
+    if (pItem) { play.rep = 0; playFrom(parseInt(pItem.getAttribute('data-pt'), 10), false); return; }
     var spkBtn = e.target.closest('[data-speak]');
     if (spkBtn) {
       var src = spkBtn.getAttribute('data-src');
