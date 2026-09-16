@@ -1,0 +1,12 @@
+{
+  "lessons": [
+    {
+      "key": "day2",
+      "file": "lessons/day2.js"
+    },
+    {
+      "key": "day3",
+      "file": "lessons/day3.js"
+    }
+  ]
+}
