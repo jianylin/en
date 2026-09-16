@@ -32,7 +32,7 @@
   .badge{font-size:12px;color:var(--board);background:rgba(44,75,59,0.10);border:1px solid rgba(44,75,59,0.25);border-radius:999px;padding:2px 10px}
   .meta-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0 12px}
   .lesson-meta{color:var(--sub);font-size:12.5px}
-  .progress{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--sub)}
+  .progress{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--sub);flex:none;white-space:nowrap}
   .dot{width:10px;height:10px;border-radius:50%;border:1px solid var(--line);background:transparent;flex:none}
   .dot.done{background:var(--board);border-color:var(--board)}
   .progress-reset{font-size:12px;color:var(--sub);text-decoration:underline;cursor:pointer;background:none;border:none;padding:0 0 0 8px}
@@ -47,8 +47,9 @@
   .lesson-btn.active .d{opacity:.78}
 
   /* ===== 导航 ===== */
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 20px}
-  .tab{min-height:44px;padding:0 18px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+  .tabs{display:flex;gap:8px;flex-wrap:nowrap;margin:0 0 20px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font-size:13.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap}
   .tab:hover{border-color:var(--board)}
   .tab.active{background:var(--board);color:var(--chalk);border-color:var(--board)}
   .view{display:none}
@@ -327,8 +328,9 @@
   'use strict';
 
   /* ===== 课程数据 ===== */
-  var LESSONS = {
-    day1: {
+    window.__regLesson = function(key, data){ LESSONS[key] = data; };
+var LESSONS = {
+  day1: {
       dateKey: '2026-09-07',
       label: '第1课',
       date: '9月7日 · 周一',
@@ -416,354 +418,29 @@
           { en:'Today is Monday.', cn:'今天是周一。' }
         ]
       }
-    },
-
-    day2: {
-      dateKey: '2026-09-08',
-      label: '第2课',
-      date: '9月8日 · 周二',
-      sentence: 'Good morning! Are you ready?',
-      audio: 'https://aka.doubaocdn.com/s/IY16WzlY4G',
-      audioMap: {
-        "Morning. I drink coffee in the morning.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_01.wav',
-        "Evening. We watch TV in the evening.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_02.wav',
-        "Watch. I watch TV.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_03.wav',
-        "Early. You are early.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_04.wav',
-        "Ready. I'm ready.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_05.wav',
-        "Good morning! Are you ready?": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_06.wav',
-        "Good morning!": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_07.wav',
-        "I drink coffee in the morning.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_08.wav',
-        "I'm ready.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_09.wav',
-        "Are you ready?": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_10.wav',
-        "I watch TV in the evening.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_11.wav',
-        "I drink coffee.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_12.wav',
-        "You go to work at nine.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_13.wav',
-        "We watch TV in the evening.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_14.wav',
-        "I don't drink coffee.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_15.wav',
-        "Do you drink coffee?": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_16.wav',
-        "Morning.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_17.wav',
-        "Evening.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_18.wav',
-        "Watch.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_19.wav',
-        "Early.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_20.wav',
-        "Ready.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/l2_21.wav'
-      },
-      wordOptions: ['morning', 'evening', 'watch', 'early', 'ready'],
-      words: [
-        { w:'Morning', ipa:'/ˈmɔːnɪŋ/', pos:'n.', cn:'早晨', ex:'I drink coffee in the morning.', excn:'我早上喝咖啡。' },
-        { w:'Evening', ipa:'/ˈiːvnɪŋ/', pos:'n.', cn:'晚上', ex:'We watch TV in the evening.', excn:'我们晚上看电视。' },
-        { w:'Watch', ipa:'/wɒtʃ/', pos:'v.', cn:'看', ex:'I watch TV.', excn:'我看电视。' },
-        { w:'Early', ipa:'/ˈɜːli/', pos:'adj.', cn:'早的', ex:'You are early.', excn:'你来得早。' },
-        { w:'Ready', ipa:'/ˈredi/', pos:'adj.', cn:'准备好的', ex:"I'm ready.", excn:'我准备好了。' }
-      ],
-      grammar: {
-        formula: '主语 + <em>动词原形</em>（I / You / We）',
-        note: '表示习惯和事实：我喝 · 你去 · 我们看',
-        cards: [
-          { t:'I（我）', ex:'I drink coffee.', excn:'我喝咖啡。', speak:'I drink coffee.' },
-          { t:'You（你 / 你们）', ex:'You go to work at nine.', excn:'你九点去上班。', speak:'You go to work at nine.' },
-          { t:'We（我们）', ex:'We watch TV in the evening.', excn:'我们晚上看电视。', speak:'We watch TV in the evening.' }
-        ],
-        extras: [
-          { t:"否定：don't（不）", ex:"I don't drink coffee.", excn:'我不喝咖啡。', speak:"I don't drink coffee." },
-          { t:'疑问：Do...?（是吗？）', ex:'Do you drink coffee?', excn:'你喝咖啡吗？', speak:'Do you drink coffee?' }
-        ]
-      },
-      exercises: {
-        ex1: {
-          items: [
-            { t:'I drink coffee in the ______.', a:'morning', hint:'早晨' },
-            { t:'I ______ TV in the evening.', a:'watch', hint:'看' },
-            { t:'You are ______ today.', a:'early', hint:'早的' },
-            { t:"I'm ______. Let's go!", a:'ready', hint:'准备好的' },
-            { t:'We watch TV in the ______.', a:'evening', hint:'晚上' }
-          ]
-        },
-        ex2: {
-          items: [
-            { t:'I ______ coffee in the morning.', a:'drink', opts:['drink','drinks','drinking'] },
-            { t:'We ______ TV in the evening.', a:'watch', opts:['watches','watch','watching'] },
-            { t:'______ you drink coffee?', a:'Do', opts:['Do','Does','Are'] }
-          ]
-        },
-        ex3: {
-          items: [
-            { t:'A: Good ______! Are you ready?', a:'morning', hint:'早晨' },
-            { t:'B: Yes, I am. You are ______ today!', a:'early', hint:'早的' },
-            { t:'A: Great. I ______ TV in the evening.', a:'watch', hint:'看' },
-            { t:'B: Me too. See you in the ______!', a:'evening', hint:'晚上' }
-          ]
-        }
-      },
-      segments: {
-        words: [
-          { en:'Morning.', cn:'早晨' }, { en:'Evening.', cn:'晚上' }, { en:'Watch.', cn:'看' },
-          { en:'Early.', cn:'早的' }, { en:'Ready.', cn:'准备好的' }
-        ],
-        sentences: [
-          { en:'Good morning!', cn:'早上好！' },
-          { en:'I drink coffee in the morning.', cn:'我早上喝咖啡。' },
-          { en:"I'm ready.", cn:'我准备好了。' }
-        ],
-        keys: [
-          { en:'Are you ready?', cn:'你准备好了吗？' },
-          { en:'I watch TV in the evening.', cn:'我晚上看电视。' }
-        ]
-      },
-      extra: {
-        cafe: {
-          topic: '工作',
-          desc: '假装我们是在咖啡厅的朋友，用英语聊天。先跟读这段开场对话，然后回到对话里和我真实演一遍（我说错你纠正我，你说错我纠正你）。',
-          lines: [
-            { who:'朋友', en:'Good morning! What do you want to drink?', cn:'早上好！你想喝点什么？' },
-            { who:'你', en:"I drink coffee in the morning. Coffee, please.", cn:'我早上喝咖啡。请给我咖啡。' },
-            { who:'朋友', en:'Good choice! Do you go to work now?', cn:'好选择！你现在去上班吗？' },
-            { who:'你', en:'Yes, I go to work at nine.', cn:'是的，我九点去上班。' },
-            { who:'朋友', en:'You are early today! Are you ready?', cn:'你今天来得真早！准备好了吗？' },
-            { who:'你', en:"Yes, I'm ready. See you in the evening!", cn:'是的，我准备好了。晚上见！' }
-          ]
-        },
-        pronunciation: [
-          {
-            en:'Good morning!',
-            ipa:'/ɡʊd ˈmɔːnɪŋ/',
-            huayin:'古德 摸宁',
-            tips:['morning 的 o 要圆唇、拉长，像“摸——宁”，不要读得又短又扁','Good 结尾的 d 轻收即可，不要用力爆出来','重音在 morning 的第一个音节']
-          },
-          {
-            en:'I drink coffee in the morning.',
-            ipa:'/aɪ drɪŋk ˈkɒfi ɪn ðə ˈmɔːnɪŋ/',
-            huayin:'爱 准克 咖啡 因 泽 摸宁',
-            tips:['drink 的 r 是轻轻带过，不是中文“准”那么重','coffee 两个 f 只发一个音：/ˈkɒfi/','in the 里的 the 要轻轻咬舌（th），中国人最常读成“泽”']
-          },
-          {
-            en:"I'm ready.",
-            ipa:'/aɪm ˈredi/',
-            huayin:'爱姆 瑞迪',
-            tips:["I'm 要连成一个音，不要读成“爱 姆”两个音节",'ready 的 e 是短元音，干脆利落，不要拖长','结尾 y 发轻轻的 /i/，收尾要轻']
-          }
-        ],
-        kids: {
-          rule:'今天学的语法，用小学生的话说就是：当我们说“我、你、我们”做什么事的时候，动词就保持原样，不加 s、不加 ing。比如“我喝咖啡”就是 I drink coffee，drink 不用变。就像中文说“我吃饭、你喝水、我们看电视”，动词都一样，英文也一样！',
-          examples:[
-            { en:'I watch TV.', cn:'我看电视。' },
-            { en:'You go to work.', cn:'你去上班。' },
-            { en:'We eat lunch.', cn:'我们吃午饭。' }
-          ]
-        },
-        cards: [
-          { w:'Morning', cn:'早晨', ex:'I drink coffee in the morning. 我早上喝咖啡。' },
-          { w:'Morning', cn:'早晨', ex:'Good morning! 早上好！' },
-          { w:'Morning', cn:'早晨', ex:'I go to work in the morning. 我早上去上班。' },
-          { w:'Morning', cn:'早晨', ex:'Morning is my favorite time. 早晨是我最喜欢的时候。' },
-          { w:'Evening', cn:'晚上', ex:'We watch TV in the evening. 我们晚上看电视。' },
-          { w:'Evening', cn:'晚上', ex:'Good evening! 晚上好！' },
-          { w:'Evening', cn:'晚上', ex:'I read a book in the evening. 我晚上看书。' },
-          { w:'Evening', cn:'晚上', ex:'See you in the evening! 晚上见！' },
-          { w:'Watch', cn:'看', ex:'I watch TV. 我看电视。' },
-          { w:'Watch', cn:'看', ex:'We watch a movie on Sunday. 我们周日看电影。' },
-          { w:'Watch', cn:'看', ex:'Do you watch football? 你看足球吗？' },
-          { w:'Watch', cn:'看', ex:'I watch the news every day. 我每天看新闻。' },
-          { w:'Early', cn:'早的', ex:'You are early today. 你今天来得很早。' },
-          { w:'Early', cn:'早的', ex:'I get up early. 我起得早。' },
-          { w:'Early', cn:'早的', ex:'Be early! Don\'t be late. 早点到！别迟到。' },
-          { w:'Early', cn:'早的', ex:'We start work early on Monday. 我们周一早上班。' },
-          { w:'Ready', cn:'准备好的', ex:"I'm ready. 我准备好了。" },
-          { w:'Ready', cn:'准备好的', ex:'Are you ready? 你准备好了吗？' },
-          { w:'Ready', cn:'准备好的', ex:'We are ready to go. 我们准备好出发了。' },
-          { w:'Ready', cn:'准备好的', ex:'Is the report ready? 报告准备好了吗？' }
-        ],
-        culture: {
-          recs: [
-            { type:'喜剧 · 电影', title:'The Intern（实习生）', why:'语速适中、职场题材，对白都是上班会用到的话' },
-            { type:'悬疑 · 剧集', title:'Stranger Things（怪奇物语）第一季', why:'剧情抓人、台词简单重复多，听下去不容易腻' },
-            { type:'科技 · 播客', title:'BBC 6 Minute English', why:'每集6分钟讲一个科技话题，语速慢、有字幕' }
-          ],
-          passage: 'Ben is 70 years old. He is old, but he wants to work. He goes to a company. The company sells clothes on the internet. Ben is an intern. Jules is the boss. She is young and busy. Ben helps her every day. He is early at work. He is happy.',
-          passageZh:'本70岁了。他年纪大了，但还想工作。他去了一家公司，这家公司在网上卖衣服。本是一名实习生。朱尔斯是老板，她年轻又忙碌。本每天都帮她。他上班总是很早。他工作得很开心。',
-          quiz: [
-            { t:'How old is Ben?', opts:['60','70','80'], a:'70' },
-            { t:'What does the company sell?', opts:['Coffee','Clothes','TV'], a:'Clothes' },
-            { t:'Who is the boss?', opts:['Ben','Jules','The intern'], a:'Jules' },
-            { t:'Is Ben early at work?', opts:['Yes, he is.','No, he isn\'t.'], a:'Yes, he is.' },
-            { t:'Is Ben happy at work?', opts:['Yes, he is.','No, he isn\'t.'], a:'Yes, he is.' }
-          ]
-        }
-      }
-    },
-
-    day3: {
-      dateKey: '2026-09-10',
-      label: '第3课',
-      date: '9月10日 · 周四',
-      sentence: "I'm having a meeting.",
-      audio: '',
-      audioMap: {
-        "Meeting. I'm in a meeting.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_01.wav',
-        "Busy. I am busy today.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_02.wav',
-        "Time. What time is it?": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_03.wav',
-        "Call. I call my friend.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_04.wav',
-        "Weekend. We watch movies on the weekend.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_05.wav',
-        "I'm having a meeting.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_06.wav',
-        "I am busy today.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_07.wav',
-        "What time is it?": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_08.wav',
-        "I'm in a meeting now.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_09.wav',
-        "Are you busy now?": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_10.wav',
-        "We watch movies on the weekend.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_11.wav',
-        "She is drinking coffee.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_12.wav',
-        "We are watching TV.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_13.wav',
-        "I'm not working now.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_14.wav',
-        "Meeting.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_15.wav',
-        "Busy.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_16.wav',
-        "Time.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_17.wav',
-        "Call.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_18.wav',
-        "Weekend.": 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/day3_19.wav'
-      },
-      wordOptions: ['meeting', 'busy', 'time', 'call', 'weekend'],
-      words: [
-        { w:'Meeting', ipa:'/ˈmiːtɪŋ/', pos:'n.', cn:'会议', ex:"I'm in a meeting.", excn:'我在开会。' },
-        { w:'Busy', ipa:'/ˈbɪzi/', pos:'adj.', cn:'忙的', ex:'I am busy today.', excn:'我今天很忙。' },
-        { w:'Time', ipa:'/taɪm/', pos:'n.', cn:'时间', ex:'What time is it?', excn:'几点了？' },
-        { w:'Call', ipa:'/kɔːl/', pos:'v.', cn:'打电话', ex:'I call my friend.', excn:'我给朋友打电话。' },
-        { w:'Weekend', ipa:'/ˌwiːkˈend/', pos:'n.', cn:'周末', ex:'We watch movies on the weekend.', excn:'我们周末看电影。' }
-      ],
-      grammar: {
-        formula: '主语 + am/is/are + <em>动词ing</em>',
-        note: '正在做的事：我正… · 他/她正… · 我们正…',
-        cards: [
-          { t:'I am + ing（我正在）', ex:"I'm having a meeting.", excn:'我正在开会。', speak:"I'm having a meeting." },
-          { t:'She is + ing（她正在）', ex:'She is drinking coffee.', excn:'她正在喝咖啡。', speak:'She is drinking coffee.' },
-          { t:'We are + ing（我们正在）', ex:'We are watching TV.', excn:'我们正在看电视。', speak:'We are watching TV.' }
-        ],
-        extras: [
-          { t:'否定：not（没在…）', ex:"I'm not working now.", excn:'我现在没在工作。', speak:"I'm not working now." },
-          { t:'疑问：Are...?（正在…吗？）', ex:'Are you busy now?', excn:'你现在忙吗？', speak:'Are you busy now?' }
-        ]
-      },
-      exercises: {
-        ex1: {
-          items: [
-            { t:"I'm in a ______ now.", a:'meeting', hint:'会议' },
-            { t:'I am ______ today.', a:'busy', hint:'忙的' },
-            { t:'What ______ is it?', a:'time', hint:'时间' },
-            { t:'I ______ my friend in the evening.', a:'call', hint:'打电话' },
-            { t:'We watch movies on the ______.', a:'weekend', hint:'周末' }
-          ]
-        },
-        ex2: {
-          items: [
-            { t:'I ______ a meeting now.', a:'am having', opts:['am having','have','has'] },
-            { t:'She ______ coffee.', a:'is drinking', opts:['is drinking','drink','drinks'] },
-            { t:'______ you working now?', a:'Are', opts:['Are','Do','Is'] }
-          ]
-        },
-        ex3: {
-          items: [
-            { t:"A: Hello! What are you doing?  B: I'm ______ a meeting.", a:'having', opts:['having','have','has'] },
-            { t:'A: Are you busy?  B: Yes, I ______ busy today.', a:'am', opts:['am','is','are'] },
-            { t:"A: What ______ is it?  B: It's nine o'clock.", a:'time', hint:'时间' },
-            { t:'A: See you on the ______!  B: See you!', a:'weekend', hint:'周末' }
-          ]
-        }
-      },
-      segments: {
-        words: [
-          { en:'Meeting.', cn:'会议' }, { en:'Busy.', cn:'忙的' }, { en:'Time.', cn:'时间' },
-          { en:'Call.', cn:'打电话' }, { en:'Weekend.', cn:'周末' }
-        ],
-        sentences: [
-          { en:'I am busy today.', cn:'我今天很忙。' },
-          { en:'What time is it?', cn:'几点了？' },
-          { en:"I'm in a meeting now.", cn:'我现在正在开会。' }
-        ],
-        keys: [
-          { en:'Are you busy now?', cn:'你现在忙吗？' },
-          { en:'We watch movies on the weekend.', cn:'我们周末看电影。' }
-        ]
-      },
-      extra: {
-        cafe: {
-          topic: '旅行',
-          desc: '假装我们是在咖啡厅的朋友，用英语聊旅行。先跟读这段开场对话，然后回到对话里和我真实演一遍（我说错你纠正我，你说错我纠正你）。',
-          lines: [
-            { who:'朋友', en:'Hello! Do you like to travel?', cn:'你好！你喜欢旅行吗？' },
-            { who:'你', en:'Yes, I travel on the weekend.', cn:'是的，我周末去旅行。' },
-            { who:'朋友', en:'Where do you go?', cn:'你去哪里？' },
-            { who:'你', en:'I go to the beach. I like the sea.', cn:'我去海滩，我喜欢大海。' },
-            { who:'朋友', en:'Are you busy this weekend?', cn:'你这个周末忙吗？' },
-            { who:'你', en:"Yes, I am. But I'm ready to travel!", cn:'忙。但我已经准备好去旅行了！' }
-          ]
-        },
-        pronunciation: [
-          {
-            en:"I'm having a meeting.",
-            ipa:'/aɪm ˈhævɪŋ ə ˈmiːtɪŋ/',
-            huayin:'爱姆 哈维嗯 呃 米挺',
-            tips:['having 的 ing 要自然收在 ng 上，不要读成“因”','meeting 的 ee 是长音 /iː/，要拉长','a meeting 里的 a 弱读成轻轻的“呃”']
-          },
-          {
-            en:'I am busy today.',
-            ipa:'/aɪ əm ˈbɪzi təˈdeɪ/',
-            huayin:'爱 呃姆 比兹 特dei',
-            tips:['busy 的 u 发 /ɪ/，像“比兹”，不是“布西”','today 重音在第二个音节 dey','口语里 I am 直接连成 I\'m']
-          },
-          {
-            en:'What time is it?',
-            ipa:'/wɒt taɪm ɪz ɪt/',
-            huayin:'沃特 太姆 一兹 一特',
-            tips:['What 的 t 轻收，不要发成“沃特特”','is it 要连读，听起来像一个词 /ɪzɪt/','整句语调上扬，是疑问的感觉']
-          }
-        ],
-        kids: {
-          rule:'今天学的语法，用小学生的话说就是：要讲“某人正在做什么”，就在动词后面加 ing（像给它戴了一顶“正在进行”的小帽子），前面再用 am/is/are 帮忙。比如“我正在吃饭”就是 I am eating，动词 eat 变成 eating。',
-          examples:[
-            { en:'I am eating lunch.', cn:'我正在吃午饭。' },
-            { en:'She is drinking coffee.', cn:'她正在喝咖啡。' },
-            { en:'We are watching TV.', cn:'我们正在看电视。' }
-          ]
-        },
-        cards: [
-          { w:'Meeting', cn:'会议', ex:"I'm in a meeting. 我在开会。" },
-          { w:'Meeting', cn:'会议', ex:'I have a meeting at nine. 我九点开会。' },
-          { w:'Meeting', cn:'会议', ex:'The meeting is long. 会议很长。' },
-          { w:'Meeting', cn:'会议', ex:'See you after the meeting. 会后见。' },
-          { w:'Busy', cn:'忙的', ex:'I am busy today. 我今天很忙。' },
-          { w:'Busy', cn:'忙的', ex:'She is busy at work. 她上班很忙。' },
-          { w:'Busy', cn:'忙的', ex:'Busy day! 忙碌的一天！' },
-          { w:'Busy', cn:'忙的', ex:"I'm busy. Don't call me. 我很忙，别打电话。" },
-          { w:'Time', cn:'时间', ex:'What time is it? 几点了？' },
-          { w:'Time', cn:'时间', ex:'I have no time. 我没时间。' },
-          { w:'Time', cn:'时间', ex:"It's time to go. 该走了。" },
-          { w:'Time', cn:'时间', ex:'Time is money. 时间就是金钱。' },
-          { w:'Call', cn:'打电话', ex:'I call my friend. 我给朋友打电话。' },
-          { w:'Call', cn:'打电话', ex:'Call me in the evening. 晚上给我打电话。' },
-          { w:'Call', cn:'打电话', ex:'I call my mom every day. 我每天给妈妈打电话。' },
-          { w:'Call', cn:'打电话', ex:'Can you call me back? 你能回我电话吗？' },
-          { w:'Weekend', cn:'周末', ex:'We watch movies on the weekend. 我们周末看电影。' },
-          { w:'Weekend', cn:'周末', ex:'Have a nice weekend! 周末愉快！' },
-          { w:'Weekend', cn:'周末', ex:'I relax on the weekend. 我周末放松。' },
-          { w:'Weekend', cn:'周末', ex:'The weekend is short. 周末太短了。' }
-        ],
-        culture: {
-          recs: [
-            { type:'喜剧 · 动画', title:'Peppa Pig（小猪佩奇）', why:'英音标准、语速慢，入门必听，日常表达超实用' },
-            { type:'悬疑 · 动画剧', title:'Scooby-Doo（史酷比）', why:'台词简单、每集一个小谜题，听着不累' },
-            { type:'科技 · 短片', title:'TED-Ed 动画科普', why:'3-5分钟讲一个科学话题，带字幕、语速适中' }
-          ],
-          passage:'Peppa is a little pig. She lives with her family. Today is a sunny day. Peppa plays in the mud. She is happy. Her brother George is with her. They play together.',
-          passageZh:'佩奇是一只小猪。她和家人住在一起。今天阳光明媚。佩奇在泥坑里玩。她很开心。她的弟弟乔治和她在一起。他们一起玩。',
-          quiz: [
-            { t:'Who is Peppa?', opts:['A little pig','A cat','A dog'], a:'A little pig' },
-            { t:'Where does Peppa live?', opts:['With her family','In a zoo','At school'], a:'With her family' },
-            { t:'What does Peppa do today?', opts:['Plays in the mud','Watches TV','Goes to work'], a:'Plays in the mud' },
-            { t:'Is Peppa happy?', opts:['Yes, she is.','No, she isn\'t.'], a:'Yes, she is.' },
-            { t:'Who is with Peppa?', opts:['Her brother George','Her teacher','No one'], a:'Her brother George' }
-          ]
-        }
-      }
     }
-  };
+};
 
   var ALL_ROUTES = ['words', 'grammar', 'practice', 'listen', 'extra'];
+
+  /* 远程课程：manifest.json 列出全部课程文件，按需加载，支持持续加课 */
+  function loadRemoteLessons(cb){
+    fetch('lessons/manifest.json', { cache: 'no-cache' }).then(function(r){ return r.json(); }).then(function(m){
+      var files = (m && m.lessons) ? m.lessons : [];
+      var chain = Promise.resolve();
+      files.forEach(function(f){
+        if (!f || !f.key || LESSONS[f.key]) { return; }
+        chain = chain.then(function(){ return new Promise(function(res){
+          var s = document.createElement('script');
+          s.src = f.file + '?v=' + Date.now();
+          s.onload = function(){ res(); };
+          s.onerror = function(){ res(); };
+          document.head.appendChild(s);
+        }); });
+      });
+      chain.then(function(){ cb(); });
+    }).catch(function(){ cb(); });
+  }
 
   /* 今天 / 昨天的日期键（用于自动标记课程） */
   function fmtDateKey(d){
@@ -776,15 +453,15 @@
   var yesterdayKey = fmtDateKey(new Date(Date.now() - 86400000));
 
   var currentLesson = null;
-  try {
-    var savedLesson = localStorage.getItem('dle_current_lesson');
-    if (LESSONS[savedLesson]) { currentLesson = savedLesson; }
-  } catch (e) {}
-  if (!currentLesson) {
-    var lessonKeys = Object.keys(LESSONS);
-    var todayLesson = lessonKeys.filter(function(k){ return LESSONS[k].dateKey === todayKey; })[0];
-    currentLesson = todayLesson || lessonKeys[lessonKeys.length - 1];
+  function selectCurrentLesson(){
+    var saved = null;
+    try { saved = localStorage.getItem('dle_current_lesson'); } catch (e) {}
+    if (saved && LESSONS[saved]) { currentLesson = saved; return; }
+    var keys = Object.keys(LESSONS);
+    var todayL = keys.filter(function(k){ return LESSONS[k].dateKey === todayKey; })[0];
+    currentLesson = todayL || keys[keys.length - 1];
   }
+  selectCurrentLesson();
 
   var scores = {};
   var checkedState = {};
@@ -1014,10 +691,10 @@
         }).join('');
 
     var kids = document.getElementById('ex-kids');
-    kids.innerHTML = '<h3 class="sec-head">儿童版语法 · 动词原形</h3>'
+    kids.innerHTML = '<h3 class="sec-head">儿童版语法 · ' + (ex.kids.title || '小知识') + '</h3>'
       + '<div class="kids-rule">' + ex.kids.rule + '</div>'
       + ex.kids.examples.map(function(e){
-          return '<div class="kids-ex"><b>' + e.en + '</b>　' + e.cn + '</div>';
+          return '<div class="kids-ex"><b>' + e.en + '</b>　' + e.cn + speaker(e.en, '朗读例句') + '</div>';
         }).join('');
 
     var cards = document.getElementById('ex-cards');
@@ -1025,11 +702,15 @@
       + '<p class="sec-desc">点击卡片翻面：正面单词，背面中文+真实场景例句。今天先过一遍，明天、后天各回来翻一次。</p>'
       + '<div class="flip-grid">'
       + ex.cards.map(function(c){
+          var en = c.ex;
+          var ci = en.search(/[\u4e00-\u9fa5]/);
+          if (ci > 0) { en = en.slice(0, ci).replace(/\s+$/, ''); }
           return '<div class="flip" tabindex="0" role="button" aria-label="翻转记忆卡">'
             + '<div class="flip-in">'
             + '<div class="flip-face"><span class="flip-w">' + c.w + '</span></div>'
-            + '<div class="flip-face flip-back"><span class="flip-cn">' + c.cn + '</span><span class="flip-ex">' + c.ex + '</span></div>'
-            + '</div></div>';
+            + '<div class="flip-face flip-back"><span class="flip-cn">' + c.cn + '</span><span class="flip-ex">' + c.ex + '</span>'
+            + speaker(en, '朗读例句')
+            + '</div></div></div>';
         }).join('')
       + '</div>';
 
@@ -1041,7 +722,7 @@
       + '<div class="actions"><button type="button" class="btn" data-check="culture">检查答案</button></div>';
     cul.innerHTML = '<h3 class="sec-head">文化沉浸挑战</h3>'
       + recs
-      + '<div class="passage"><div>' + ex.culture.passage + '</div><div class="zh">' + ex.culture.passageZh + '</div></div>'
+      + '<div class="passage"><div>' + ex.culture.passage + speaker(ex.culture.passage, '朗读短文') + '</div><div class="zh">' + ex.culture.passageZh + '</div></div>'
       + '<p class="sec-desc">先听/读上面这段英语（电影《实习生》情节简介），再做 5 道理解题。</p>'
       + quizHtml;
     var qbox = document.getElementById('culture-quiz');
@@ -1112,12 +793,65 @@
   }
   /* 音频双通道：jsDelivr CDN（国内快）优先，github.io 兜底 */
   var AUDIO_CDN = 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/';
-  var AUDIO_GH  = 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/';
+  var AUDIO_GH  = 'https://jianylin.github.io/en/assets/audio/';
   function fallbackUrl(u){
     if (typeof u !== 'string') { return null; }
     if (u.indexOf(AUDIO_CDN) === 0) { return AUDIO_GH + u.slice(AUDIO_CDN.length); }
     return null;
   }
+  var _snd = null;          /* 全局单例音频 */
+  var _sndCache = {};       /* url -> Audio 缓存 */
+  var _lastSpk = { t: 0, btn: null };
+  function stopTts(){ if (window.speechSynthesis) { try { speechSynthesis.cancel(); } catch (e) {} } }
+  function clearPlaying(btn){
+    if (btn) { btn.classList.remove('on'); }
+    document.querySelectorAll('.spk.on').forEach(function(b){ b.classList.remove('on'); });
+  }
+  function playSrc(url, btn){
+    if (!url || !btn) { return; }
+    var now = Date.now();
+    if (_lastSpk.btn === btn && now - _lastSpk.t < 400) { return; } /* 防重 */
+    _lastSpk = { t: now, btn: btn };
+    stopTts();
+    clearPlaying(btn);
+    if (_snd) { try { _snd.pause(); _snd.currentTime = 0; } catch (e) {} }
+    var a = _sndCache[url] || new Audio(url);
+    _sndCache[url] = a;
+    a.preload = 'auto';
+    _snd = a;
+    btn.classList.add('on');
+    var fb = fallbackUrl(url);
+    var p = a.play();
+    if (p && p.catch) { p.catch(function(){}); }
+    a.onended = function(){ if (_snd === a) { _snd = null; } clearPlaying(btn); };
+    a.onerror = function(){
+      if (_snd !== a) { return; }
+      clearPlaying(btn);
+      _snd = null;
+      if (!fb) { return; }
+      var a2 = _sndCache[fb] || new Audio(fb);
+      _sndCache[fb] = a2;
+      _snd = a2;
+      btn.classList.add('on');
+      var p2 = a2.play();
+      if (p2 && p2.catch) { p2.catch(function(){}); }
+      a2.onended = function(){ if (_snd === a2) { _snd = null; } clearPlaying(btn); };
+      a2.onerror = function(){ if (_snd === a2) { _snd = null; } clearPlaying(btn); };
+    };
+  }
+  function preloadLessonAudio(){
+    var am = lesson().audioMap;
+    if (!am) { return; }
+    Object.keys(am).forEach(function(k){
+      var u = am[k];
+      if (u && !_sndCache[u] && Object.keys(_sndCache).length < 80) {
+        var a = new Audio(u);
+        a.preload = 'auto';
+        _sndCache[u] = a;
+      }
+    });
+  }
+
   function stopPlayer(paused){
     play.state = paused ? 'paused' : 'done';
     if (play.audio) { try { play.audio.pause(); } catch (err) {} }
@@ -1252,6 +986,7 @@
 
   /* ===== 整页渲染 ===== */
   function renderAll(){
+    if (scores[currentLesson] === undefined) { scores[currentLesson] = 0; checkedState[currentLesson] = { ex1:false, ex2:false, ex3:false }; prevScores[currentLesson] = { ex1:0, ex2:0, ex3:0 }; }
     var L = lesson();
     document.getElementById('lesson-date').textContent = L.label + ' · ' + L.date;
     document.getElementById('today-sentence').textContent = L.sentence;
@@ -1276,12 +1011,13 @@
     });
     renderProgress();
     renderScore();
+    preloadLessonAudio();
   }
 
   /* ===== 事件 ===== */
   document.addEventListener('click', function(e){
     var flip = e.target.closest('.flip');
-    if (flip) { flip.classList.toggle('flipped'); return; }
+    if (flip && !e.target.closest('[data-speak]')) { flip.classList.toggle('flipped'); return; }
     var playBtn = e.target.closest('#btn-play');
     if (playBtn) { togglePlay(); return; }
     var prevBtn = e.target.closest('#btn-prev');
@@ -1293,23 +1029,7 @@
     var spkBtn = e.target.closest('[data-speak]');
     if (spkBtn) {
       var src = spkBtn.getAttribute('data-src');
-      if (src) {
-        if (window._snd) { try { window._snd.pause(); } catch (err) {} }
-        var a = new Audio(src);
-        a.play();
-        window._snd = a;
-        var fb = fallbackUrl(src);
-        if (fb) {
-          a.onerror = function(){
-            if (window._snd !== a) { return; }
-            try { a.pause(); } catch (err) {}
-            var a2 = new Audio(fb);
-            a2.play();
-            window._snd = a2;
-          };
-        }
-        return;
-      }
+      if (src) { playSrc(src, spkBtn); return; }
       speak(spkBtn.getAttribute('data-speak'), spkBtn);
       return;
     }
@@ -1338,8 +1058,11 @@
 
   /* ===== 初始化 ===== */
   if (!location.hash) { location.hash = 'words'; }
-  renderAll();
-  renderTabs();
+  loadRemoteLessons(function(){
+    selectCurrentLesson();
+    renderAll();
+    renderTabs();
+  });
 })();
 </script>
 </body>
