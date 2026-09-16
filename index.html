@@ -432,9 +432,18 @@ var LESSONS = {
         if (!f || !f.key || LESSONS[f.key]) { return; }
         chain = chain.then(function(){ return new Promise(function(res){
           var s = document.createElement('script');
-          s.src = f.file + '?v=' + Date.now();
-          s.onload = function(){ res(); };
-          s.onerror = function(){ res(); };
+          var done = false;
+          var finish = function(){ if (!done) { done = true; res(); } };
+          s.onload = finish;
+          s.onerror = function(){
+            s.onload = null; s.onerror = null;
+            var s2 = document.createElement('script');
+            s2.src = f.file + '?v=' + Date.now();
+            s2.onload = finish;
+            s2.onerror = finish;
+            document.head.appendChild(s2);
+          };
+          s.src = 'https://cdn.jsdelivr.net/gh/jianylin/en@main/' + f.file;
           document.head.appendChild(s);
         }); });
       });
