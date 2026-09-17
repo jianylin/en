@@ -1,1 +1,44 @@
-{"lessons":[{"key":"day2","file":"lessons/day2.js"},{"key":"day3","file":"lessons/day3.js"},{"key":"day4","file":"lessons/day4.js"},{"key":"day5","file":"lessons/day5.js"},{"key":"day6","file":"lessons/day6.js"},{"key":"day7","file":"lessons/day7.js"},{"key":"day8","file":"lessons/day8.js"},{"key":"day9","file":"lessons/day9.js"},{"key":"day10","file":"lessons/day10.js"}]}
+{
+  "lessons": [
+    {
+      "key": "day2",
+      "file": "lessons/day2.js"
+    },
+    {
+      "key": "day3",
+      "file": "lessons/day3.js"
+    },
+    {
+      "key": "day4",
+      "file": "lessons/day4.js"
+    },
+    {
+      "key": "day5",
+      "file": "lessons/day5.js"
+    },
+    {
+      "key": "day6",
+      "file": "lessons/day6.js"
+    },
+    {
+      "key": "day7",
+      "file": "lessons/day7.js"
+    },
+    {
+      "key": "day8",
+      "file": "lessons/day8.js"
+    },
+    {
+      "key": "day9",
+      "file": "lessons/day9.js"
+    },
+    {
+      "key": "day10",
+      "file": "lessons/day10.js"
+    },
+    {
+      "key": "day11",
+      "file": "lessons/day11.js"
+    }
+  ]
+}
