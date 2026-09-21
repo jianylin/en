@@ -989,7 +989,7 @@ var LESSONS = {
   function renderLessonSwitch(){
     var box = document.getElementById('lesson-switch');
     var keys = Object.keys(LESSONS).sort(function(a, b){
-      return LESSONS[a].dateKey < LESSONS[b].dateKey ? -1 : LESSONS[a].dateKey > LESSONS[b].dateKey ? 1 : 0;
+      return LESSONS[a].dateKey < LESSONS[b].dateKey ? 1 : LESSONS[a].dateKey > LESSONS[b].dateKey ? -1 : 0;
     });
     box.innerHTML = keys.map(function(k){
       var L = LESSONS[k];
