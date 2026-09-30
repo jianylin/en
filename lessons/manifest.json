@@ -83,6 +83,14 @@
     {
       "key": "day22",
       "file": "lessons/day22.js"
+    },
+    {
+      "key": "day23",
+      "file": "lessons/day23.js"
+    },
+    {
+      "key": "day24",
+      "file": "lessons/day24.js"
     }
   ]
 }
