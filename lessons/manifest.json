@@ -139,6 +139,10 @@
     {
       "key": "day35",
       "file": "lessons/day35.js"
+    },
+    {
+      "key": "day36",
+      "file": "lessons/day36.js"
     }
   ]
 }
