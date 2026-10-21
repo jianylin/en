@@ -430,30 +430,47 @@ var LESSONS = {
 
   /* 远程课程：manifest.json 列出全部课程文件，按需加载，支持持续加课 */
   function loadRemoteLessons(cb){
-    fetch('lessons/manifest.json', { cache: 'no-cache' }).then(function(r){ return r.json(); }).then(function(m){
+    var attempts = 0;
+    function fetchManifest(){
+      fetch('lessons/manifest.json', { cache: 'no-cache' }).then(function(r){ return r.json(); }).then(function(m){
+        try { localStorage.setItem('dle_manifest_cache', JSON.stringify(m)); } catch (e) {}
+        loadFiles(m);
+      }).catch(function(){
+        attempts++;
+        if (attempts < 3) { setTimeout(fetchManifest, 800); return; }
+        var cached = null;
+        try { cached = JSON.parse(localStorage.getItem('dle_manifest_cache') || 'null'); } catch (e) {}
+        if (cached && cached.lessons) { loadFiles(cached); } else { cb(); }
+      });
+    }
+    function loadFiles(m){
       var files = (m && m.lessons) ? m.lessons : [];
       var chain = Promise.resolve();
       files.forEach(function(f){
         if (!f || !f.key || LESSONS[f.key]) { return; }
         chain = chain.then(function(){ return new Promise(function(res){
-          var s = document.createElement('script');
           var done = false;
           var finish = function(){ if (!done) { done = true; res(); } };
-          s.onload = finish;
+          var timer = setTimeout(finish, 9000);
+          var s = document.createElement('script');
+          s.onload = function(){ clearTimeout(timer); finish(); };
           s.onerror = function(){
             s.onload = null; s.onerror = null;
+            clearTimeout(timer);
             var s2 = document.createElement('script');
             s2.src = f.file + '?v=' + Date.now();
-            s2.onload = finish;
-            s2.onerror = finish;
+            var t2 = setTimeout(finish, 9000);
+            s2.onload = function(){ clearTimeout(t2); finish(); };
+            s2.onerror = function(){ clearTimeout(t2); finish(); };
             document.head.appendChild(s2);
           };
           s.src = 'https://cdn.jsdelivr.net/gh/jianylin/en@main/' + f.file;
           document.head.appendChild(s);
         }); });
       });
-      chain.then(function(){ cb(); });
-    }).catch(function(){ cb(); });
+      chain.then(cb);
+    }
+    fetchManifest();
   }
 
   /* 今天 / 昨天的日期键（用于自动标记课程） */
