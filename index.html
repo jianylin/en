@@ -827,9 +827,14 @@ var LESSONS = {
       el.classList.toggle('playing', play.state === 'playing' && parseInt(el.getAttribute('data-pt'), 10) === play.idx);
     });
   }
-  /* 音频双通道：jsDelivr CDN（国内快）优先，github.io 兜底 */
+  /* 音频双通道：github.io 同源优先（国内可达），jsDelivr CDN 兜底 */
   var AUDIO_CDN = 'https://cdn.jsdelivr.net/gh/jianylin/en@main/assets/audio/';
   var AUDIO_GH  = 'https://jianylin.github.io/en/assets/audio/';
+  function primaryUrl(u){
+    if (typeof u !== 'string') { return null; }
+    if (u.indexOf(AUDIO_CDN) === 0) { return AUDIO_GH + u.slice(AUDIO_CDN.length); }
+    return null;
+  }
   function fallbackUrl(u){
     if (typeof u !== 'string') { return null; }
     if (u.indexOf(AUDIO_CDN) === 0) { return AUDIO_GH + u.slice(AUDIO_CDN.length); }
@@ -851,12 +856,13 @@ var LESSONS = {
     stopTts();
     clearPlaying(btn);
     if (_snd) { try { _snd.pause(); _snd.currentTime = 0; } catch (e) {} }
-    var a = _sndCache[url] || new Audio(url);
-    _sndCache[url] = a;
+    var main = primaryUrl(url) || url;   /* 同源 github.io 优先 */
+    var fb = main === url ? fallbackUrl(url) : url;  /* jsDelivr 兜底 */
+    var a = _sndCache[main] || new Audio(main);
+    _sndCache[main] = a;
     a.preload = 'auto';
     _snd = a;
     btn.classList.add('on');
-    var fb = fallbackUrl(url);
     var p = a.play();
     if (p && p.catch) { p.catch(function(){}); }
     a.onended = function(){ if (_snd === a) { _snd = null; } clearPlaying(btn); };
@@ -879,7 +885,7 @@ var LESSONS = {
     var am = lesson().audioMap;
     if (!am) { return; }
     Object.keys(am).forEach(function(k){
-      var u = am[k];
+      var u = primaryUrl(am[k]) || am[k];   /* 同源 github.io 优先 */
       if (u && !_sndCache[u] && Object.keys(_sndCache).length < 80) {
         var a = new Audio(u);
         a.preload = 'auto';
@@ -902,8 +908,10 @@ var LESSONS = {
       stopPlayer(false);
       return;
     }
-    var url = lesson().audioMap[seq[idx].en];
-    if (!url) { if (auto) { playFrom(idx + 1, true); } return; }
+    var url0 = lesson().audioMap[seq[idx].en];
+    if (!url0) { if (auto) { playFrom(idx + 1, true); } return; }
+    var url = primaryUrl(url0) || url0;            /* 同源 github.io 优先 */
+    var fb = url === url0 ? fallbackUrl(url0) : url0; /* jsDelivr 兜底 */
     if (play.audio) { try { play.audio.pause(); } catch (err) {} }
     var a = new Audio(url);
     play.audio = a;
@@ -929,7 +937,6 @@ var LESSONS = {
     };
     a.onerror = function(){
       if (play.state !== 'playing') { return; }
-      var fb = fallbackUrl(url);
       if (!play.retried && fb) {
         play.retried = true;
         var a2 = new Audio(fb);
