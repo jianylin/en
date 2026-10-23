@@ -50,6 +50,13 @@
   .lesson-chip.today .t{color:var(--board)}
   .lesson-chip.today.active{background:var(--board);color:var(--chalk);border-color:var(--board)}
   .lesson-chip.today.active .d{color:var(--chalk);opacity:.85}
+  /* 课程分组条：每10课一组 */
+  .lesson-groups{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;margin-bottom:2px;scrollbar-width:none}
+  .lesson-groups::-webkit-scrollbar{display:none}
+  .lesson-group{flex:none;font-size:12px;color:var(--sub);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer;white-space:nowrap;font-family:inherit;line-height:1.4}
+  .lesson-group .gtoday{display:inline-block;margin-left:5px;color:var(--board);background:rgba(44,75,59,0.12);border-radius:999px;padding:0 6px;font-size:10.5px}
+  .lesson-group.active{background:var(--board);color:var(--chalk);border-color:var(--board);font-weight:600}
+  .lesson-group.active .gtoday{color:#F2C94C;background:rgba(242,201,76,0.18)}
 
   /* ===== 导航 ===== */
   .tabs{display:flex;gap:8px;flex-wrap:nowrap;margin:0 0 20px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
@@ -209,7 +216,8 @@
     </div>
   </div>
 
-  <!-- ===== 课程切换（按日期自动生成，自动标记今天/昨天） ===== -->
+  <!-- ===== 课程切换：按课号分组（每组10课），自动标记今天/昨天 ===== -->
+  <div class="lesson-groups" id="lesson-groups"></div>
   <div class="lesson-strip" id="lesson-switch"></div>
 
   <!-- ===== 导航 ===== -->
@@ -1015,20 +1023,58 @@ var LESSONS = {
     if (dateKey === yesterdayKey) { return '昨天'; }
     return '';
   }
+  function lessonNo(L){
+    var m = /第\s*(\d+)\s*课/.exec(L.label || '');
+    return m ? parseInt(m[1], 10) : 0;
+  }
+  var GROUP_SIZE = 10;
+  var currentGroup = null;   /* 0-based 组号 */
+  function groupKeyFor(n){ return Math.floor((n - 1) / GROUP_SIZE); }
   function renderLessonSwitch(){
     var box = document.getElementById('lesson-switch');
+    var gbox = document.getElementById('lesson-groups');
+    if (!box || !gbox) { return; }
+    /* 课号正序 */
     var keys = Object.keys(LESSONS).sort(function(a, b){
-      return LESSONS[a].dateKey < LESSONS[b].dateKey ? 1 : LESSONS[a].dateKey > LESSONS[b].dateKey ? -1 : 0;
+      return lessonNo(LESSONS[a]) - lessonNo(LESSONS[b]);
     });
-    box.innerHTML = keys.map(function(k){
+    /* 分组 */
+    var groups = {};
+    keys.forEach(function(k){
+      var g = groupKeyFor(lessonNo(LESSONS[k]));
+      if (!groups[g]) { groups[g] = []; }
+      groups[g].push(k);
+    });
+    var gKeys = Object.keys(groups).map(Number).sort(function(a, b){ return a - b; });
+    /* 默认组 = 今天所在组；无今天则最后一组 */
+    if (currentGroup === null || gKeys.indexOf(currentGroup) < 0) {
+      var todayK = keys.filter(function(k){ return LESSONS[k].dateKey === todayKey; })[0];
+      currentGroup = todayK ? groupKeyFor(lessonNo(LESSONS[todayK])) : gKeys[gKeys.length - 1];
+    }
+    /* 分组条 */
+    gbox.innerHTML = gKeys.map(function(g){
+      var from = g * GROUP_SIZE + 1;
+      var to = Math.min((g + 1) * GROUP_SIZE, keys.length);
+      var hasToday = groups[g].some(function(k){ return LESSONS[k].dateKey === todayKey; });
+      return '<button type="button" class="lesson-group' + (g === currentGroup ? ' active' : '') + '" data-group="' + g + '">'
+        + '<span>' + from + '-' + to + '课</span>'
+        + (hasToday ? '<span class="gtoday">今</span>' : '')
+        + '</button>';
+    }).join('');
+    /* 当前组课程条（最多10个） */
+    box.innerHTML = (groups[currentGroup] || []).map(function(k){
       var L = LESSONS[k];
       var rel = relationFor(L.dateKey);
-      var main = rel || L.label;
       var md = L.dateKey.slice(5).replace('-', '/');
-      return '<button type="button" class="lesson-chip' + (rel === '今天' ? ' today' : '') + '" data-lesson="' + k + '">'
-        + '<span class="t">' + main + '</span>'
-        + '<span class="d">' + md + '</span></button>';
+      return '<button type="button" class="lesson-chip' + (rel ? ' today' : '') + '" data-lesson="' + k + '">'
+        + '<span class="t">' + L.label + '</span>'
+        + '<span class="d">' + md + (rel ? ' · ' + rel : '') + '</span></button>';
     }).join('');
+    box.querySelectorAll('.lesson-chip').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-lesson') === currentLesson);
+    });
+    var activeG = gbox.querySelector('.lesson-group.active');
+    if (activeG) { try { activeG.scrollIntoView({ inline: 'nearest', block: 'nearest' }); } catch (err) {} }
     var active = box.querySelector('.lesson-chip.active');
     if (active) { try { active.scrollIntoView({ inline: 'nearest', block: 'nearest' }); } catch (err) {} }
   }
@@ -1092,10 +1138,17 @@ var LESSONS = {
     if (resetBtn) { resetExercise(resetBtn.getAttribute('data-reset')); return; }
     var tab = e.target.closest('.tab');
     if (tab) { location.hash = tab.getAttribute('data-route'); return; }
+    var groupBtn = e.target.closest('.lesson-group');
+    if (groupBtn) {
+      currentGroup = parseInt(groupBtn.getAttribute('data-group'), 10);
+      renderLessonSwitch();
+      return;
+    }
     var lessonBtn = e.target.closest('.lesson-chip');
     if (lessonBtn) {
       currentLesson = lessonBtn.getAttribute('data-lesson');
       try { localStorage.setItem('dle_current_lesson', currentLesson); } catch (err) {}
+      currentGroup = groupKeyFor(lessonNo(LESSONS[currentLesson]));
       renderAll();
       renderTabs();
       return;
