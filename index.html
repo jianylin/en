@@ -429,6 +429,7 @@ var LESSONS = {
   var ALL_ROUTES = ['words', 'grammar', 'practice', 'listen', 'extra'];
 
   /* 远程课程：manifest.json 列出全部课程文件，按需加载，支持持续加课 */
+  /* 课程 JS 优先同源（github.io，国内可达），jsDelivr 兜底；并发加载 + 挂起保护 */
   function loadRemoteLessons(cb){
     var attempts = 0;
     function fetchManifest(){
@@ -443,32 +444,36 @@ var LESSONS = {
         if (cached && cached.lessons) { loadFiles(cached); } else { cb(); }
       });
     }
+    function loadFile(f, done){
+      var finished = false;
+      function finish(){ if (!finished) { finished = true; done(); } }
+      var s = document.createElement('script');
+      s.onload = finish;
+      s.onerror = function(){
+        s.onload = null; s.onerror = null;
+        var s2 = document.createElement('script');
+        s2.src = 'https://cdn.jsdelivr.net/gh/jianylin/en@main/' + f.file + '?v=' + Date.now();
+        var t2 = setTimeout(finish, 4000);
+        s2.onload = function(){ clearTimeout(t2); finish(); };
+        s2.onerror = function(){ clearTimeout(t2); finish(); };
+        document.head.appendChild(s2);
+        return;
+      };
+      s.src = f.file;              /* 同源 github.io，与 manifest/页面一致 */
+      document.head.appendChild(s);
+      setTimeout(finish, 4000);    /* 连接挂起保护，不干等 9 秒 */
+    }
     function loadFiles(m){
       var files = (m && m.lessons) ? m.lessons : [];
-      var chain = Promise.resolve();
-      files.forEach(function(f){
-        if (!f || !f.key || LESSONS[f.key]) { return; }
-        chain = chain.then(function(){ return new Promise(function(res){
-          var done = false;
-          var finish = function(){ if (!done) { done = true; res(); } };
-          var timer = setTimeout(finish, 9000);
-          var s = document.createElement('script');
-          s.onload = function(){ clearTimeout(timer); finish(); };
-          s.onerror = function(){
-            s.onload = null; s.onerror = null;
-            clearTimeout(timer);
-            var s2 = document.createElement('script');
-            s2.src = f.file + '?v=' + Date.now();
-            var t2 = setTimeout(finish, 9000);
-            s2.onload = function(){ clearTimeout(t2); finish(); };
-            s2.onerror = function(){ clearTimeout(t2); finish(); };
-            document.head.appendChild(s2);
-          };
-          s.src = 'https://cdn.jsdelivr.net/gh/jianylin/en@main/' + f.file;
-          document.head.appendChild(s);
-        }); });
-      });
-      chain.then(cb);
+      var pending = files.filter(function(f){ return f && f.key && !LESSONS[f.key]; });
+      if (!pending.length) { cb(); return; }
+      var workers = Math.min(6, Math.max(1, Math.ceil(pending.length / 4)));
+      var idx = 0;
+      function next(){
+        if (idx >= pending.length) { cb(); return; }
+        loadFile(pending[idx++], next);
+      }
+      for (var w = 0; w < workers; w++) { next(); }
     }
     fetchManifest();
   }
